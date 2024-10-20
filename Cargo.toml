@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-iced = { version = "0.13.1", features = ["canvas", "debug", "tokio"] }
+iced = { version = "0.13.1", features = ["canvas", "debug", "tokio", "advanced"] }
 tracing-subscriber = "0.3.18"
+tracing = "0.1.40"
 rand = "0.8.5"
