@@ -1,0 +1,276 @@
+{
+  "sun": {
+    "consts": {
+      "mass": 1.9885e30,
+      "radius": 6.96e5
+    },
+    "color": {
+      "red": 255,
+      "green": 153,
+      "blue": 51
+    }
+  },
+  "planets": [
+    {
+      "name": "Mercury",
+      "consts": {
+        "mass": 3.33022e23,
+        "orbit": 57909227.0,
+        "radius": 2438.7
+      },
+      "color": {
+        "red": 102,
+        "green": 102,
+        "blue": 255
+      },
+      "satellites": []
+    },
+    {
+      "name": "Venus",
+      "consts": {
+        "mass": 4.8675e24,
+        "orbit": 108942109.0,
+        "radius": 6051.8
+      },
+      "color": {
+        "red": 255,
+        "green": 178,
+        "blue": 102
+      },
+      "satellites": []
+    },
+    {
+      "name": "Earth",
+      "consts": {
+        "mass": 5.9726e24,
+        "orbit": 149597871.0,
+        "radius": 6371.0
+      },
+      "color": {
+        "red": 26,
+        "green": 194,
+        "blue": 23
+      },
+      "satellites": [
+        {
+          "name": "Moon",
+          "consts": {
+            "mass": 7.3477e22,
+            "orbit": 384399.0,
+            "radius": 1737.1
+          },
+          "color": {
+            "red": 166,
+            "green": 171,
+            "blue": 166
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mars",
+      "consts": {
+        "mass": 6.4171e23,
+        "orbit": 2.2794382e8,
+        "radius": 3389.5
+      },
+      "color": {
+        "red": 212,
+        "green": 91,
+        "blue": 31
+      },
+      "satellites": []
+    },
+    {
+      "name": "Jupiter",
+      "consts": {
+        "mass": 6.4171e23,
+        "orbit": 7.785472e8,
+        "radius": 69911.0
+      },
+      "color": {
+        "red": 255,
+        "green": 217,
+        "blue": 198
+      },
+      "satellites": [
+        {
+          "name": "Europa",
+          "consts": {
+            "mass": 4.8017e22,
+            "orbit": 671100.0,
+            "radius": 1560.8
+          },
+          "color": {
+            "red": 245,
+            "green": 227,
+            "blue": 217
+          }
+        },
+        {
+          "name": "Io",
+          "consts": {
+            "mass": 8.9319e22,
+            "orbit": 421800.0,
+            "radius": 1821.3
+          },
+          "color": {
+            "red": 204,
+            "green": 204,
+            "blue": 0
+          }
+        },
+        {
+          "name": "Callisto",
+          "consts": {
+            "mass": 1.075e23,
+            "orbit": 1882700.0,
+            "radius": 2410.3
+          },
+          "color": {
+            "red": 96,
+            "green": 96,
+            "blue": 96
+          }
+        },
+        {
+          "name": "Ganymede",
+          "consts": {
+            "mass": 1.4819e23,
+            "orbit": 1070400.0,
+            "radius": 2634.1
+          },
+          "color": {
+            "red": 160,
+            "green": 160,
+            "blue": 160
+          }
+        }
+      ]
+    },
+    {
+      "name": "Saturn",
+      "consts": {
+        "mass": 5.6846e26,
+        "orbit": 1429394069,
+        "radius": 58232.0
+      },
+      "color": {
+        "red": 249,
+        "green": 229,
+        "blue": 184
+      },
+      "satellites": [
+        {
+          "name": "Rhea",
+          "consts": {
+            "mass": 2.306518e21,
+            "orbit": 527100.0,
+            "radius": 763.5
+          },
+          "color": {
+            "red": 220,
+            "green": 220,
+            "blue": 220
+          }
+        },
+        {
+          "name": "Titan",
+          "consts": {
+            "mass": 1.3452e23,
+            "orbit": 1221870,
+            "radius": 2576.0
+          },
+          "color": {
+            "red": 255,
+            "green": 239,
+            "blue": 199
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uranus",
+      "consts": {
+        "mass": 8.6813e25,
+        "orbit": 2876679082,
+        "radius": 25362.0
+      },
+      "color": {
+        "red": 102,
+        "green": 255,
+        "blue": 255
+      },
+      "satellites": [
+        {
+          "name": "Oberon",
+          "consts": {
+            "mass": 3.014e21,
+            "orbit": 583520.0,
+            "radius": 761.4
+          },
+          "color": {
+            "red": 233,
+            "green": 229,
+            "blue": 218
+          }
+        },
+        {
+          "name": "Titania",
+          "consts": {
+            "mass": 3.527e21,
+            "orbit": 436300.0,
+            "radius": 788.4
+          },
+          "color": {
+            "red": 128,
+            "green": 128,
+            "blue": 128
+          }
+        }
+      ]
+    },
+    {
+      "name": "Neptune",
+      "consts": {
+        "mass": 1.02409e26,
+        "orbit": 4503443661,
+        "radius": 24622.0
+      },
+      "color": {
+        "red": 0,
+        "green": 128,
+        "blue": 255
+      },
+      "satellites": [
+        {
+          "name": "Triton",
+          "consts": {
+            "mass": 2.14e22,
+            "orbit": 354759.0,
+            "radius": 1353.4
+          },
+          "color": {
+            "red": 224,
+            "green": 224,
+            "blue": 224
+          }
+        }
+      ]
+    }
+  ],
+  "comet": {
+    "possible_velocities": [
+      30.0,
+      70.0
+    ],
+    "possible_masses": [
+      1e12,
+      1e18
+    ],
+    "possible_radii": [
+      0.5,
+      60.0
+    ]
+  }
+}

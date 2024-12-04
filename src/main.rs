@@ -1,15 +1,16 @@
 use std::time::Duration;
-use iced::{application, Element, Fill, Subscription, Theme};
+
+use iced::{application, Element, Fill, Point, Subscription, Theme};
 use iced::time::every;
-use iced::widget::canvas;
+use iced::widget::{canvas, stack};
+
+use crate::state::State;
 
 mod objects;
 mod state;
-mod time;
+mod views;
 
 pub fn main() -> iced::Result {
-    tracing_subscriber::fmt::init();
-
     application(
         SolarSystem::title,
         SolarSystem::update,
@@ -23,25 +24,70 @@ pub fn main() -> iced::Result {
 
 #[derive(Default)]
 struct SolarSystem {
-    state: state::State,
+    state: State,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 enum Message {
-    Tick
+    PositionChange(Point),
+    ScaleChange(i16),
+    ScaleInputChange(String),
+    LeftButtonPressed(Point),
+    LeftButtonReleased,
+    PlayPauseToggle,
+    Tick,
+    IncreaseSpeed,
+    DecreaseSpeed,
+    AddComet,
+    DeleteComet(u8),
+    CenterSystem,
 }
 
 impl SolarSystem {
     fn update(&mut self, message: Message) {
         match message {
-            Message::Tick => {
-                self.state.update();
-            }
+            Message::PositionChange(position) => self.state.change_position(position),
+
+            Message::ScaleChange(scale_change) => self.state.change_scale(scale_change),
+
+            Message::Tick => self.state.update(),
+
+            Message::ScaleInputChange(scale_string) =>
+                self.state.set_scale_from_input(scale_string),
+
+            Message::PlayPauseToggle => self.state.toggle_play_pause(),
+
+            Message::IncreaseSpeed => self.state.increase_speed(),
+
+            Message::DecreaseSpeed => self.state.decrease_speed(),
+
+            Message::AddComet => self.state.add_comet(),
+
+            Message::DeleteComet(index) => self.state.delete_comet(index),
+
+            Message::CenterSystem => self.state.center_system(),
+            
+            Message::LeftButtonPressed(position) => self.state.on_left_button_pressed(position),
+            
+            Message::LeftButtonReleased => self.state.on_left_button_released(),
         }
     }
 
     fn view(&self) -> Element<Message> {
-        canvas(&self.state)
+        let solar_system = canvas(&self.state)
+            .width(Fill)
+            .height(Fill);
+
+        let panel = self.control_panel(
+            self.state.time.to_string(),
+            self.state.settings.speed.to_string(),
+            self.state.space.comets_count() as u32,
+        );
+
+        stack![
+            solar_system,
+            panel
+        ]
             .width(Fill)
             .height(Fill)
             .into()
@@ -52,8 +98,12 @@ impl SolarSystem {
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        every(Duration::from_millis(50/3))
-            .map(|_| Message::Tick)
+        if self.state.settings.running {
+            every(Duration::from_micros(self.state.speed()))
+                .map(|_| Message::Tick)
+        } else {
+            Subscription::none()
+        }
     }
 
     fn title(&self) -> String {

@@ -1,13 +1,53 @@
-use crate::objects::PermanentObjectParameters;
+use iced::{Color, Point};
 
-pub struct Sun;
+use util::file_data::SunData;
+use util::objects::{Object, SolarSystemObjectConsts};
+use util::physics::quantities::Quantity;
+use util::physics::quantities::quantity_units::{Kilograms, Kilometers};
 
-impl PermanentObjectParameters for Sun {
-    const ORBIT: f32 = 0.;
-    const RADIUS: f32 = 696_000_000.;
-    const CIRCULATION_PERIOD: f32 = 0.0695;
-    const RED: u8 = 255;
-    const GREEN: u8 = 153;
-    const BLUE: u8 = 51;
-    const NAME: &'static str = "Sun";
+pub struct Sun {
+    consts: SolarSystemObjectConsts,
+    color: Color,
+}
+
+impl Sun {
+    pub fn new(data: SunData) -> Self {
+        let SunData { consts, color} = data;
+        
+        let consts = SolarSystemObjectConsts::new(
+            consts.mass as f64,
+            0.,
+            consts.radius,
+        );
+
+        Self {
+            consts,
+            color: Color::from_rgb8(color.red, color.green, color.blue),
+        }
+    }
+}
+
+impl Object for Sun {
+    fn name(&self) -> &str {
+        "Sun"
+    }
+
+    fn mass(&self) -> Quantity<Kilograms> {
+        self.consts.mass()
+    }
+
+    fn radius(&self) -> Quantity<Kilometers> {
+        self.consts.radius()
+    }
+
+    fn position(&self) -> Point<Quantity<Kilometers>> {
+        Point {
+            x: Quantity::new(Kilometers::new(0.)),
+            y: Quantity::new(Kilometers::new(0.)),
+        }
+    }
+
+    fn color(&self) -> Color {
+        self.color
+    }
 }
