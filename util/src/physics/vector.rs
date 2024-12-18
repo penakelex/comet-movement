@@ -10,16 +10,14 @@ use crate::physics::quantities::quantity_units::{
     MetersPerSecond,
 };
 
+/// Физический вектор
 #[allow(type_alias_bounds)]
 pub type VectorValue<T>
 where
     T: QuantityUnit + NewQuantity + Copy + Clone,
 = crate::geometry::vector::VectorValue<Quantity<T>, T::Value>;
 
-impl<T> VectorValue<T>
-where
-    T: QuantityUnit + NewQuantity + Copy + Clone,
-{
+impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
     pub fn to_vector(&self) -> Vector<T::Value> {
         Vector::new(
             self.value.value() * self.unit_vector.x,
@@ -40,10 +38,8 @@ where
 }
 
 impl VectorValue<InterimQuantityUnit> {
-    pub fn parse<Q>(self) -> VectorValue<Q>
-    where
-        Q: QuantityUnit + NewQuantity + Copy + Clone,
-    {
+    /// Перевод из неопределённой физической величины в конкретную
+    pub fn parse<Q: QuantityUnit + NewQuantity + Copy + Clone>(self) -> VectorValue<Q> {
         let unit_vector = Vector::new(
             <Q::Value as NumCast>::from(self.unit_vector.x).unwrap(),
             <Q::Value as NumCast>::from(self.unit_vector.y).unwrap(),
@@ -54,6 +50,7 @@ impl VectorValue<InterimQuantityUnit> {
 }
 
 impl VectorValue<MetersPerSecond> {
+    /// Перевод скорости из м/с в км/с
     pub fn to_kilometers_per_second(self) -> VectorValue<KilometersPerSecond> {
         let unit_vector = Vector::new(
             self.unit_vector.x as f32,
@@ -72,8 +69,7 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn mul(self, scalar: Quantity<Q>) -> Self::Output {
-        let value = self.value.value().to_f64().unwrap() * scalar.value().to_f64().unwrap();
-
+        let value = self.value.value_f64() * scalar.value_f64();
         VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
     }
 }
@@ -86,8 +82,7 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn div(self, scalar: Quantity<Q>) -> Self::Output {
-        let value = self.value.value().to_f64().unwrap() / scalar.value().to_f64().unwrap();
-
+        let value = self.value.value_f64() / scalar.value_f64();
         VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
     }
 }
@@ -131,8 +126,7 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn div(self, scalar: F) -> Self::Output {
-        let value = self.value.value().to_f64().unwrap() / scalar.to_f64().unwrap();
-
+        let value = self.value.value_f64() / scalar.to_f64().unwrap();
         VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
     }
 }

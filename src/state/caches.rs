@@ -1,15 +1,24 @@
+use gset::Getset;
 use iced::widget::canvas::Cache;
 
-#[derive(Default)]
+/// Кеш для отрисовки Солнечной системы
+#[derive(Default, Getset)]
 pub struct StateCache {
-    pub stars: Cache,
-    pub orbits: Cache,
-    pub system: Cache,
+    /// Кеш для фоновых звёзд
+    #[getset(get, vis = "pub")]
+    stars: Cache,
+    /// Кеш для объектов солнечной системы
+    #[getset(get, vis = "pub")]
+    system: Cache,
 }
 
 impl StateCache {
-    pub fn clear_orbits_and_system(&self) {
-        self.orbits.clear();
+    pub fn clear_system(&self) {
+        self.system.clear();
+    }
+    
+    pub fn clear_all(&self) {
+        self.stars.clear();
         self.system.clear();
     }
 }

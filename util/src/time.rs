@@ -1,5 +1,6 @@
 use std::fmt::{Display, Formatter};
 
+/// Структура для представления времени симуляции
 pub struct Time {
     year: u16,
     month: u8,
@@ -23,28 +24,31 @@ impl Time {
 }
 
 impl Time {
+    /// Является ли год високосным
     fn is_year_leap(&self) -> bool {
-        (self.year % 4 == 0 && self.year % 100 != 0) || self.year % 400 == 0
+        self.year % 4 == 0 && self.year % 100 != 0 || self.year % 400 == 0
     }
 
+    /// Дней в месяце
     fn days_in_month(&self) -> u8 {
         match self.month {
-            1 => 31,
-            2 => if self.is_year_leap() { 29 } else { 28 },
-            3 => 31,
-            4 => 30,
-            5 => 31,
-            6 => 30,
-            7 => 31,
-            8 => 31,
-            9 => 30,
-            10 => 31,
-            11 => 30,
-            12 => 31,
+            1 => 31, // Январь
+            2 => if self.is_year_leap() { 29 } else { 28 }, // Февраль
+            3 => 31, // Март
+            4 => 30, // Апрель
+            5 => 31, // Май
+            6 => 30, // Июнь
+            7 => 31, // Июль
+            8 => 31, // Август
+            9 => 30, // Сентябрь
+            10 => 31, // Октябрь
+            11 => 30, // Ноябрь
+            12 => 31, // Декабрь
             _ => panic!("There is only 12 months")
         }
     }
 
+    /// Добавление к текущему времени секунд
     pub fn add_seconds(&mut self, seconds: u16) {
         let current_summary_seconds = seconds + self.second as u16;
 
@@ -87,6 +91,17 @@ impl Time {
 
         self.month = 1;
         self.year += 1;
+    }
+}
+
+impl Time {
+    pub fn restart(&mut self) {
+        self.year = 1;
+        self.month = 1;
+        self.day = 1;
+        self.hour = 0;
+        self.minute = 0;
+        self.second = 0;
     }
 }
 

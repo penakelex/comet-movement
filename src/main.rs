@@ -11,11 +11,7 @@ mod state;
 mod views;
 
 pub fn main() -> iced::Result {
-    application(
-        SolarSystem::title,
-        SolarSystem::update,
-        SolarSystem::view,
-    )
+    application(SolarSystem::title, SolarSystem::update, SolarSystem::view)
         .subscription(SolarSystem::subscription)
         .theme(SolarSystem::theme)
         .antialiasing(true)
@@ -41,6 +37,7 @@ enum Message {
     AddComet,
     DeleteComet(u8),
     CenterSystem,
+    Reload,
 }
 
 impl SolarSystem {
@@ -52,9 +49,9 @@ impl SolarSystem {
 
             Message::Tick => self.state.update(),
 
-            Message::ScaleInputChange(scale_string) =>
-                self.state.set_scale_from_input(scale_string),
-
+            Message::ScaleInputChange(scale_string) => self.state
+                .set_scale_from_input(scale_string),
+            
             Message::PlayPauseToggle => self.state.toggle_play_pause(),
 
             Message::IncreaseSpeed => self.state.increase_speed(),
@@ -66,10 +63,12 @@ impl SolarSystem {
             Message::DeleteComet(index) => self.state.delete_comet(index),
 
             Message::CenterSystem => self.state.center_system(),
-            
+
             Message::LeftButtonPressed(position) => self.state.on_left_button_pressed(position),
-            
+
             Message::LeftButtonReleased => self.state.on_left_button_released(),
+
+            Message::Reload => self.state.reload(),
         }
     }
 
@@ -80,7 +79,7 @@ impl SolarSystem {
 
         let panel = self.control_panel(
             self.state.time.to_string(),
-            self.state.settings.speed.to_string(),
+            self.state.settings.speed().to_string(),
             self.state.space.comets_count() as u32,
         );
 
@@ -98,8 +97,8 @@ impl SolarSystem {
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        if self.state.settings.running {
-            every(Duration::from_micros(self.state.speed()))
+        if self.state.settings.running() {
+            every(Duration::from_nanos(self.state.config.time_between_ticks_in_nanos() as u64))
                 .map(|_| Message::Tick)
         } else {
             Subscription::none()

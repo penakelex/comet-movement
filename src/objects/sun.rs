@@ -1,28 +1,24 @@
-use iced::{Color, Point};
-
-use util::file_data::SunData;
-use util::objects::{Object, SolarSystemObjectConsts};
+use iced::Point;
+use iced::widget::image;
+use util::data::solar_system_data::SunData;
+use util::objects::consts::SolarSystemObjectConsts;
+use util::objects::Object;
 use util::physics::quantities::Quantity;
 use util::physics::quantities::quantity_units::{Kilograms, Kilometers};
 
+
 pub struct Sun {
     consts: SolarSystemObjectConsts,
-    color: Color,
+    image: image::Handle,
 }
 
 impl Sun {
-    pub fn new(data: SunData) -> Self {
-        let SunData { consts, color} = data;
+    pub fn new(data: SunData, path_to_images: &str) -> Self {
+        let SunData { consts, image_filename} = data;
         
-        let consts = SolarSystemObjectConsts::new(
-            consts.mass as f64,
-            0.,
-            consts.radius,
-        );
-
         Self {
-            consts,
-            color: Color::from_rgb8(color.red, color.green, color.blue),
+            consts: SolarSystemObjectConsts::new(consts.mass, 0., consts.radius),
+            image: image::Handle::from_path(format!("{path_to_images}/{image_filename}")),
         }
     }
 }
@@ -47,7 +43,7 @@ impl Object for Sun {
         }
     }
 
-    fn color(&self) -> Color {
-        self.color
+    fn image(&self) -> &image::Handle {
+        &self.image
     }
 }

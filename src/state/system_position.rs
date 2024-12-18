@@ -1,12 +1,15 @@
-use getset::{CopyGetters, Getters};
+use gset::Getset;
 use iced::Point;
 
-#[derive(Default, Getters, CopyGetters)]
+/// Состояние позиции Солнечной системы
+#[derive(Default, Getset)]
 pub struct SolarSystemPositionState {
-    #[getset(get_copy = "pub")]
+    /// Позиция Солнечной системы
+    #[getset(get_copy, vis = "pub")]
     center_position: Point,
+    /// Последняя позиция курсора
     last_cursor_position: Option<Point>,
-    #[getset(get = "pub")]
+    #[getset(get, vis = "pub")]
     pinch: CursorPinch,
 }
 
@@ -24,12 +27,12 @@ impl SolarSystemPositionState {
     }
 
     pub fn move_center_position(&mut self, cursor_position: Point) {
-        let last_cursor_position = self.last_cursor_position.unwrap();
-
-        self.center_position = Point::new(
-            self.center_position.x + cursor_position.x - last_cursor_position.x,
-            self.center_position.y + cursor_position.y - last_cursor_position.y,
-        );
+        if let Some(last_position) = self.last_cursor_position {
+            self.center_position = Point::new(
+                self.center_position.x + cursor_position.x - last_position.x,
+                self.center_position.y + cursor_position.y - last_position.y,
+            );
+        }
 
         self.last_cursor_position = Some(cursor_position);
     }
@@ -39,6 +42,15 @@ impl SolarSystemPositionState {
     }
 }
 
+impl SolarSystemPositionState {
+    pub fn reload(&mut self) {
+        self.center_position = Point::ORIGIN;
+        self.pinch = CursorPinch::NotClamped;
+        self.last_cursor_position = None;
+    }
+}
+
+/// Состояние нажатия на левую кнопку мыши
 #[derive(Default)]
 pub enum CursorPinch {
     Clamped,

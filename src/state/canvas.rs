@@ -1,20 +1,29 @@
 use std::cell::{Ref, RefCell};
-use std::rc::Rc;
+use std::rc::Weak;
 
-use iced::{Color, mouse, Point, Rectangle, Renderer, Theme, Vector};
+use iced::{Color, mouse, Point, Rectangle, Renderer, Size, Theme, Vector};
 use iced::event::Status;
 use iced::mouse::{Button, Cursor, ScrollDelta};
 use iced::widget::canvas;
-use iced::widget::canvas::{Event, Frame, Geometry, LineDash, Path, Stroke, Style};
-
+use iced::widget::canvas::{Event, Frame, Geometry, Path, Stroke, Style};
+use tap::TapOptional;
 use util::geometry::point::translate_point;
-use util::objects::{Object, ObjectTrajectory};
+use util::objects::{MovingObject, Object};
 
 use crate::Message;
 use crate::objects::stars::Star;
 use crate::state::State;
 use crate::state::system_position::CursorPinch;
 
+/// Перенос центра координатной системы на позицию Солнца
+fn translate_frame_to_new_center(frame: &mut Frame, center_position: Point) {
+    let frame_center = frame.center();
+    frame.translate(
+        Vector::new(frame_center.x + center_position.x, frame_center.y + center_position.y)
+    );
+}
+
+/// Отрисовка фоновых звёзд
 fn draw_stars(frame: &mut Frame, stars: &[Star]) {
     frame.fill_rectangle(Point::ORIGIN, frame.size(), Color::BLACK);
 
@@ -33,46 +42,41 @@ fn draw_stars(frame: &mut Frame, stars: &[Star]) {
     frame.fill(&stars, Color::WHITE);
 }
 
-fn draw_orbits(
+/// Отрисовка Солнечной системы
+fn draw_system(
     frame: &mut Frame,
     center_position: Point,
-    scale: u64,
     bounds: Rectangle,
-    objects_with_trajectory: &[Rc<RefCell<dyn ObjectTrajectory>>],
-    step: u16,
+    scale: u64,
+    step: u32,
+    all_objects: &[Weak<RefCell<dyn Object>>],
+    moving_objects: &[Weak<RefCell<dyn MovingObject>>],
 ) {
-    let frame_center = frame.center();
+    translate_frame_to_new_center(frame, center_position);
 
-    frame.translate(
-        Vector::new(
-            frame_center.x + center_position.x,
-            frame_center.y + center_position.y,
-        )
-    );
+    moving_objects.iter().for_each(|object| {
+        object.upgrade().tap_some(|object_rc| {
+            draw_object_orbit(frame, scale, center_position, bounds, object_rc.borrow(), step)
+        });
+    });
 
-    objects_with_trajectory.iter().for_each(|object| {
-        draw_object_orbit(
-            frame,
-            scale,
-            center_position,
-            bounds,
-            object.borrow(),
-            step,
-        );
+    all_objects.iter().for_each(|object| {
+        object.upgrade()
+            .tap_some(|object_rc| draw_object(frame, scale, object_rc.borrow()));
     });
 }
 
+/// Отрисовка орбит (траекторий) объектов
 fn draw_object_orbit(
     frame: &mut Frame,
     scale: u64,
     center_position: Point,
     bounds: Rectangle,
-    object: Ref<dyn ObjectTrajectory>,
-    step: u16,
+    object: Ref<dyn MovingObject>,
+    step: u32,
 ) {
     let path = Path::new(|builder| {
         let frame_center = frame.center();
-
         let system_center_position = Point::new(
             frame_center.x + center_position.x,
             frame_center.y + center_position.y,
@@ -84,69 +88,47 @@ fn draw_object_orbit(
 
         builder.move_to(first_position);
 
-        let mut is_last_position_was_inside = bounds.contains(first_position);
+        let mut is_last_position_was_inside = bounds
+            .contains(translate_point(first_position, system_center_position, Point::ORIGIN));
 
         for position in object_positions {
-            let translated_position = translate_point(
-                position,
-                system_center_position,
-                Point::ORIGIN,
-            );
-
-            if bounds.contains(translated_position) {
+            if bounds.contains(translate_point(position, system_center_position, Point::ORIGIN)) {
                 builder.line_to(position);
                 is_last_position_was_inside = true;
                 continue;
             }
 
             if is_last_position_was_inside {
-                builder.move_to(position);
-            } else {
                 builder.line_to(position);
+                is_last_position_was_inside = false;
+                continue;
             }
 
-            is_last_position_was_inside = false;
+            builder.move_to(position);
         }
     });
 
     frame.stroke(
         &path,
         Stroke {
-            style: Style::Solid(Color::WHITE.scale_alpha(0.1)),
-            width: 1.,
-            line_dash: LineDash {
-                offset: 0,
-                segments: &[3., 6.],
-            },
+            style: Style::Solid(object.trajectory_color()),
+            width: 0.5,
             ..Stroke::default()
         },
     )
 }
 
-fn draw_system(
-    frame: &mut Frame,
-    center_position: Point,
-    scale: u64,
-    all_objects: &[Rc<RefCell<dyn Object>>],
-) {
-    let frame_center = frame.center();
+/// Отрисовка объекта
+fn draw_object(frame: &mut Frame, scale: u64, object: Ref<dyn Object>) {
+    let radius = object.scaled_radius(scale);
+    let position = object.scaled_position(scale);
 
-    frame.translate(
-        Vector::new(
-            frame_center.x + center_position.x,
-            frame_center.y + center_position.y,
-        )
+    let bounds = Rectangle::new(
+        Point::new(position.x - radius, position.y - radius),
+        Size::new(radius * 2., radius * 2.),
     );
 
-    all_objects.iter()
-        .for_each(|object| draw_object(frame, scale, object.borrow()));
-}
-
-fn draw_object(frame: &mut Frame, scale: u64, object: Ref<dyn Object>) {
-    frame.fill(
-        &Path::circle(object.scaled_position(scale), object.scaled_radius(scale)),
-        object.color(),
-    )
+    frame.draw_image(bounds, object.image());
 }
 
 impl canvas::Program<Message> for State {
@@ -159,37 +141,37 @@ impl canvas::Program<Message> for State {
         _bounds: Rectangle,
         cursor: Cursor,
     ) -> (Status, Option<Message>) {
-        if let Event::Mouse(mouse_event) = event {
-            return match mouse_event {
-                mouse::Event::WheelScrolled { delta } => {
-                    if let ScrollDelta::Lines { y, .. } = delta {
-                        (Status::Captured, Some(Message::ScaleChange(y as i16)))
-                    } else {
-                        (Status::Ignored, None)
-                    }
-                }
+        match event {
+            Event::Mouse(mouse_event) => match mouse_event {
+                // Изменение масштаба
+                mouse::Event::WheelScrolled { delta: ScrollDelta::Lines { y, .. } } => (
+                    Status::Captured,
+                    Some(Message::ScaleChange(y as i16))
+                ),
 
-                mouse::Event::CursorMoved {
-                    position
-                } if matches!(self.system_position.pinch(), CursorPinch::Clamped) => (
+                // Перемещение Солнечной системы
+                mouse::Event::CursorMoved { position }
+                if matches!(self.system_position.pinch(), CursorPinch::Clamped) => (
                     Status::Captured,
                     Some(Message::PositionChange(position))
                 ),
 
-                mouse::Event::ButtonPressed(button) if matches!(button, Button::Left) => (
+                // Начало перемещения Солнечной системы
+                mouse::Event::ButtonPressed(Button::Left) => (
                     Status::Ignored,
                     Some(Message::LeftButtonPressed(cursor.position().unwrap()))
                 ),
 
-                mouse::Event::ButtonReleased(button) if matches!(button, Button::Left) => (
+                // Конец перемещения Солнечной системы
+                mouse::Event::ButtonReleased(Button::Left) => (
                     Status::Ignored,
                     Some(Message::LeftButtonReleased)
                 ),
 
                 _ => (Status::Ignored, None),
-            };
+            },
+            _ => (Status::Ignored, None),
         }
-        (Status::Ignored, None)
     }
 
     fn draw(
@@ -200,40 +182,31 @@ impl canvas::Program<Message> for State {
         bounds: Rectangle,
         _cursor: Cursor,
     ) -> Vec<Geometry<Renderer>> {
-        let center_position = self.system_position.system_position();
+        let center_position = self.system_position.center_position();
 
-        let orbits_step_between_points = (self.settings.scale.value / 300_000) as u16 + 1;
+        let orbits_step_between_points =
+            (self.settings.scale().value() / self.config.step_formation() as u64) as u32 + 1;
 
-        let stars = self.cache.stars.draw(
+        let stars = self.cache.stars().draw(
             renderer,
             bounds.size(),
             |frame| draw_stars(frame, self.space.stars()),
         );
 
-        let orbits = self.cache.orbits.draw(
-            renderer,
-            bounds.size(),
-            |frame| draw_orbits(
-                frame,
-                center_position,
-                self.settings.scale.value,
-                bounds,
-                self.space.objects_with_trajectory(),
-                orbits_step_between_points,
-            ),
-        );
-
-        let system = self.cache.system.draw(
+        let system = self.cache.system().draw(
             renderer,
             bounds.size(),
             |frame| draw_system(
                 frame,
                 center_position,
-                self.settings.scale.value,
+                bounds,
+                self.settings.scale().value(),
+                orbits_step_between_points,
                 self.space.all_objects(),
+                self.space.moving_objects(),
             ),
         );
 
-        vec![stars, orbits, system]
+        vec![stars, system]
     }
 }

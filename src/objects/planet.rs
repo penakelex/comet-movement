@@ -2,68 +2,85 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use iced::{Color, Point};
-
-use util::file_data::{ColorData, PlanetConsts};
-use util::objects::{Object, ObjectPositionUpdate, ObjectTrajectory, SolarSystemObjectConsts};
+use iced::widget::image;
+use util::data::solar_system_data::ObjectConsts;
+use util::objects::{Object, ObjectMotion};
+use util::objects::consts::SolarSystemObjectConsts;
 use util::objects::movement::ObjectMovement;
+use util::physics::formulas::orbital_velocity;
 use util::physics::quantities::Quantity;
 use util::physics::quantities::quantity_units::{
     Kilograms,
     Kilometers,
     KilometersPerSecond,
-    Seconds,
 };
-use util::physics::vector::VectorValue;
 
 use crate::objects::satellite::Satellite;
 
+/// Планета
 pub struct Planet {
+    /// Название
     name: String,
+    /// Константы
     consts: SolarSystemObjectConsts,
-    color: Color,
-    satellites: Vec<Rc<RefCell<Satellite>>>,
+    /// Движение
     movement: ObjectMovement,
+    /// Изображение
+    image: image::Handle,
+    /// Спутники
+    satellites: Vec<Rc<RefCell<Satellite>>>,
 }
 
 impl Planet {
     pub fn new(
         planet_name: String,
-        sun_radius: f32,
-        planet_consts: PlanetConsts,
+        initial_position: f32,
+        planet_consts: ObjectConsts,
         velocity: Quantity<KilometersPerSecond>,
-        color: ColorData,
+        trajectory_color: Color,
+        path_to_image: String,
         satellites: Vec<Satellite>,
     ) -> Self {
         let consts = SolarSystemObjectConsts::new(
-            planet_consts.mass as f64,
+            planet_consts.mass,
             planet_consts.orbit,
             planet_consts.radius,
         );
 
         let movement = ObjectMovement::new_solar_system_object_movement(
             velocity,
-            sun_radius + planet_consts.orbit + planet_consts.radius,
+            initial_position,
+            trajectory_color,
         );
 
         let satellites = satellites.into_iter()
             .map(|satellite| Rc::new(RefCell::new(satellite)))
             .collect();
-
+        
         Self {
             name: planet_name,
             consts,
-            color: Color::from_rgb8(color.red, color.green, color.blue),
-            satellites,
             movement,
+            image: image::Handle::from_path(path_to_image),
+            satellites,
         }
+    }
+    
+    /// Расчёт начальной позиции
+    pub fn initial_position(sun_radius: f32, planet_orbit: f32, planet_radius: f32) -> f32 {
+        sun_radius + planet_orbit + planet_radius
     }
 }
 
 impl Planet {
+    pub fn initial_orbit(&self) -> f32 {
+        self.consts.initial_orbit().value()
+    }
+    
     pub fn satellites(&self) -> &[Rc<RefCell<Satellite>>] {
         self.satellites.as_slice()
     }
-
+    
     pub fn satellites_mut(&mut self) -> &mut [Rc<RefCell<Satellite>>] {
         self.satellites.as_mut_slice()
     }
@@ -86,23 +103,32 @@ impl Object for Planet {
         self.movement.position()
     }
 
-    fn color(&self) -> Color {
-        self.color
+    fn image(&self) -> &image::Handle {
+        &self.image
     }
 }
 
-impl ObjectPositionUpdate for Planet {
-    fn update_position(
-        &mut self,
-        velocity_change: VectorValue<KilometersPerSecond>,
-        time_interval: Quantity<Seconds>,
-    ) {
-        self.movement.update_position(velocity_change, time_interval);
+impl ObjectMotion for Planet {
+    fn movement(&self) -> &ObjectMovement {
+        &self.movement
+    }
+
+    fn movement_mut(&mut self) -> &mut ObjectMovement {
+        &mut self.movement
     }
 }
 
-impl ObjectTrajectory for Planet {
-    fn trajectory<'a>(&'a self, step: u16, scale: f32) -> Box<dyn Iterator<Item=Point> + 'a> {
-        Box::new(self.movement.stepped_scaled_trajectory(step, scale))
+impl Planet {
+    pub fn reload(&mut self, sun_mass: Quantity<Kilograms>) {
+        let velocity = orbital_velocity(
+            sun_mass,
+            Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
+        );
+
+        self.movement = ObjectMovement::new_solar_system_object_movement(
+            velocity,
+            self.consts.initial_orbit().value(),
+            self.movement.trajectory_color(),
+        );
     }
 }

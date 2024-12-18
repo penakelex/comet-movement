@@ -1,56 +1,63 @@
 use iced::{Color, Point};
-
-use util::file_data::SatelliteData;
-use util::objects::{Object, ObjectPositionUpdate, ObjectTrajectory, SolarSystemObjectConsts};
+use iced::widget::image;
+use util::data::solar_system_data::SatelliteData;
+use util::objects::{Object, ObjectMotion};
+use util::objects::consts::SolarSystemObjectConsts;
 use util::objects::movement::ObjectMovement;
 use util::physics::formulas::orbital_velocity;
 use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond, Seconds};
-use util::physics::vector::VectorValue;
+use util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
 
+/// Спутник
 pub struct Satellite {
+    /// Название
     name: String,
+    /// Константы
     consts: SolarSystemObjectConsts,
-    color: Color,
+    /// Движение
     movement: ObjectMovement,
+    /// Изображение
+    image: image::Handle,
 }
 
 impl Satellite {
     pub fn new(
         satellite_data: SatelliteData,
-        sun_radius: f32,
-        planet_mass: f32,
-        planet_orbit: f32,
-        planet_radius: f32,
         planet_velocity: Quantity<KilometersPerSecond>,
+        planet_mass: f64,
+        planet_initial_orbit: f32,
+        planet_radius: f32,
+        trajectory_color: Color,
+        path_to_images: &str,
     ) -> Self {
         let SatelliteData {
             name,
             consts: satellite_consts,
-            color,
+            image_filename,
         } = satellite_data;
 
         let velocity = orbital_velocity(
-            Quantity::new(Kilograms::new(planet_mass as f64)),
+            Quantity::new(Kilograms::new(planet_mass)),
             Quantity::new(Kilometers::new(satellite_consts.orbit)),
         );
 
         let consts = SolarSystemObjectConsts::new(
-            satellite_consts.mass as f64,
+            satellite_consts.mass,
             satellite_consts.orbit,
             satellite_consts.radius,
         );
 
         let movement = ObjectMovement::new_solar_system_object_movement(
             (velocity + planet_velocity).parse(),
-            sun_radius + planet_orbit + planet_radius * 2. + satellite_consts.orbit,
+            planet_initial_orbit + planet_radius + satellite_consts.orbit,
+            trajectory_color,
         );
 
         Self {
             name,
             consts,
-            color: Color::from_rgb8(color.red, color.green, color.blue),
             movement,
+            image: image::Handle::from_path(format!("{path_to_images}/{image_filename}")),
         }
     }
 }
@@ -72,23 +79,38 @@ impl Object for Satellite {
         self.movement.position()
     }
 
-    fn color(&self) -> Color {
-        self.color
+    fn image(&self) -> &image::Handle {
+        &self.image
     }
 }
 
-impl ObjectPositionUpdate for Satellite {
-    fn update_position(
+impl ObjectMotion for Satellite {
+    fn movement(&self) -> &ObjectMovement {
+        &self.movement
+    }
+
+    fn movement_mut(&mut self) -> &mut ObjectMovement {
+        &mut self.movement
+    }
+}
+
+impl Satellite {
+    pub fn reload(
         &mut self,
-        velocity_change: VectorValue<KilometersPerSecond>,
-        time_interval: Quantity<Seconds>,
+        planet_velocity: Quantity<KilometersPerSecond>,
+        planet_mass: f64,
+        planet_initial_orbit: f32,
+        planet_radius: f32,
     ) {
-        self.movement.update_position(velocity_change, time_interval);
-    }
-}
-
-impl ObjectTrajectory for Satellite {
-    fn trajectory<'a>(&'a self, step: u16, scale: f32) -> Box<dyn Iterator<Item=Point> + 'a> {
-        Box::new(self.movement.stepped_scaled_trajectory(step, scale))
+        let velocity = orbital_velocity(
+            Quantity::new(Kilograms::new(planet_mass)),
+            Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
+        );
+        
+        self.movement = ObjectMovement::new_solar_system_object_movement(
+            (velocity + planet_velocity).parse(),
+            planet_initial_orbit + planet_radius + self.consts.initial_orbit().value(),
+            self.movement.trajectory_color(),
+        )
     }
 }

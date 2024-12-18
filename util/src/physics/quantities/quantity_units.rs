@@ -1,5 +1,6 @@
 use crate::physics::quantities::{NewQuantity, QuantityUnit};
 
+/// Физическая единица силы: Ньютоны
 #[derive(Copy, Clone)]
 pub struct Newtons(f64);
 
@@ -27,6 +28,7 @@ impl QuantityUnit for Newtons {
     }
 }
 
+/// Физическая единица расстояния: Километры
 #[derive(Copy, Clone)]
 pub struct Kilometers(f32);
 
@@ -54,6 +56,7 @@ impl QuantityUnit for Kilometers {
     }
 }
 
+/// Физическая единица расстояния: Метры
 #[derive(Copy, Clone)]
 pub struct Meters(f64);
 
@@ -81,6 +84,7 @@ impl QuantityUnit for Meters {
     }
 }
 
+/// Физическая единица скорости: Километры в секунду
 #[derive(Copy, Clone)]
 pub struct KilometersPerSecond(f32);
 
@@ -108,6 +112,7 @@ impl QuantityUnit for KilometersPerSecond {
     }
 }
 
+/// Физическая единица скорости: Метры в секунду
 #[derive(Copy, Clone)]
 pub struct MetersPerSecond(f64);
 
@@ -135,6 +140,7 @@ impl QuantityUnit for MetersPerSecond {
     }
 }
 
+/// Физическая единица массы: Килограммы
 #[derive(Copy, Clone)]
 pub struct Kilograms(f64);
 
@@ -162,6 +168,7 @@ impl QuantityUnit for Kilograms {
     }
 }
 
+/// Физическая единица гравитационной постоянной
 #[derive(Copy, Clone)]
 pub struct NewtonMeterSquaredPerKilogramSquared(f64);
 
@@ -189,6 +196,7 @@ impl QuantityUnit for NewtonMeterSquaredPerKilogramSquared {
     }
 }
 
+/// Физическая единица импульса: Килограмм на метр в секунду
 #[derive(Copy, Clone)]
 pub struct KilogramMeterPerSecond(f64);
 
@@ -216,6 +224,7 @@ impl QuantityUnit for KilogramMeterPerSecond {
     }
 }
 
+/// Физическая единица времени: Секунды
 #[derive(Copy, Clone)]
 pub struct Seconds(f32);
 
@@ -243,6 +252,7 @@ impl QuantityUnit for Seconds {
     }
 }
 
+/// Неопределённая (промежуточная) физическая единица
 #[derive(Copy, Clone)]
 pub struct InterimQuantityUnit(f64);
 

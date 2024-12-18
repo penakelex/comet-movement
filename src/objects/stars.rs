@@ -1,15 +1,26 @@
 use iced::Point;
+use rand::Rng;
+use rand::rngs::ThreadRng;
 
+/// Фоновая звезда
 pub struct Star {
+    /// Позиция относительно размеров окна
     pub relative_point: Point,
+    /// Размер
     pub size: f32,
 }
 
 impl Star {
-    pub fn new(point_x: f32, point_y: f32, size: f32) -> Self {
+    /// Генерация новой звезды
+    pub fn generate(rng: &mut ThreadRng) -> Self {
+        let relative_point = Point::new(
+            rng.gen_range(-1.0..=1.0),
+            rng.gen_range(-1.0..=1.0),
+        );
+        
         Star {
-            relative_point: Point::new(point_x, point_y),
-            size,
+            relative_point,
+            size: rng.gen_range(0.5..1.0),
         }
     }
 }

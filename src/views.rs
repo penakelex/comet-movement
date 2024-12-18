@@ -14,7 +14,7 @@ impl SolarSystem {
 
         let text_editor = text_input(
             "",
-            self.state.settings.scale.value_string.as_str(),
+            self.state.settings.scale().value_string(),
         )
             .on_input(Message::ScaleInputChange)
             .width(90);
@@ -33,7 +33,7 @@ impl SolarSystem {
             .on_press(Message::IncreaseSpeed);
 
         let play_button_text =
-            if self.state.settings.running { PAUSE } else { PLAY };
+            if self.state.settings.running() { PAUSE } else { PLAY };
 
         let play_button = button(play_button_text)
             .width(120)
@@ -59,8 +59,14 @@ impl SolarSystem {
             .width(120)
             .height(40)
             .on_press(Message::CenterSystem);
+        
+        let reload = button("Reload")
+            .width(120)
+            .height(40)
+            .on_press(Message::Reload);
 
         let panel = row![
+            reload,
             center_system,
             comets_count_text,
             delete_comet_button,
