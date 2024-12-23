@@ -1,3 +1,5 @@
+use tap::Tap;
+
 /// Состояние повторной отрисовки
 pub struct RedrawState {
     ticks_until_redraw: u32,
@@ -16,13 +18,13 @@ impl RedrawState {
 impl RedrawState {
     /// Проверка, нужно ли отрисовывать на текущем тике
     pub fn redraw_on_tick(&mut self) -> bool {
-        if self.ticks_until_redraw == 0 {
-            self.ticks_until_redraw = self.ticks_between_redraws;
-            true
-        } else {
-            self.ticks_until_redraw -= 1;
-            false
-        }
+        (self.ticks_until_redraw == 0).tap(|redraw| {
+            if *redraw {
+                self.ticks_until_redraw = self.ticks_between_redraws;
+            } else {
+                self.ticks_until_redraw -= 1;
+            }
+        })
     }
 }
 

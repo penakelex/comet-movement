@@ -9,21 +9,21 @@ use iced::Color;
 use rand::{Rng, thread_rng};
 use serde_json::from_reader;
 use tap::{Tap, TapOptional};
-use util::data::solar_system_data::{Data, PlanetData};
-use util::geometry::circle::{Circle, is_circles_have_common_points};
-use util::objects::{MovingObject, Object, ObjectMotion};
-use util::objects::values::FormValues;
-use util::physics::formulas::{orbital_velocity, vector_of_velocity_change};
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond, Seconds};
-use util::physics::vector::VectorValue;
 
-use crate::objects::comet::CometPossibleValues;
+use crate::objects::comet::{Comet, CometPossibleValues};
 use crate::objects::planet::Planet;
 use crate::objects::satellite::Satellite;
 use crate::objects::stars::Star;
 use crate::objects::sun::Sun;
 use crate::state::space::comets::CometsState;
+use crate::util::data::solar_system_data::{Data, PlanetData};
+use crate::util::geometry::circle::{Circle, is_circles_have_common_points};
+use crate::util::objects::{MovingObject, Object, ObjectMotion};
+use crate::util::objects::values::FormValues;
+use crate::util::physics::formulas::{orbital_velocity, vector_of_velocity_change};
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond, Seconds};
+use crate::util::physics::vector::VectorValue;
 
 pub mod comets;
 
@@ -96,11 +96,11 @@ impl SpaceState {
         Vec::<Weak<RefCell<dyn Object>>>::new().tap_mut(|all_objects| {
             let sun: Rc<RefCell<dyn Object>> = sun.clone();
             all_objects.push(Rc::downgrade(&sun));
-            
+
             planets.iter().for_each(|planet| {
                 let planet_as_object: Rc<RefCell<dyn Object>> = planet.clone();
                 all_objects.push(Rc::downgrade(&planet_as_object));
-                
+
                 planet.borrow().satellites().iter().for_each(|satellite| {
                     let satellite: Rc<RefCell<dyn Object>> = satellite.clone();
                     all_objects.push(Rc::downgrade(&satellite));
@@ -108,14 +108,14 @@ impl SpaceState {
             });
         })
     }
-    
+
     /// Составление всех двигающихся объектов
     fn get_moving_objects(planets: &[Rc<RefCell<Planet>>]) -> Vec<Weak<RefCell<dyn MovingObject>>> {
         Vec::<Weak<RefCell<dyn MovingObject>>>::new().tap_mut(|moving_objects| {
             planets.iter().for_each(|planet| {
                 let planet_as_object: Rc<RefCell<dyn MovingObject>> = planet.clone();
                 moving_objects.push(Rc::downgrade(&planet_as_object));
-                
+
                 planet.borrow().satellites().iter().for_each(|satellite| {
                     let satellite: Rc<RefCell<dyn MovingObject>> = satellite.clone();
                     moving_objects.push(Rc::downgrade(&satellite));
@@ -246,6 +246,14 @@ impl SpaceState {
         self.stars.as_slice()
     }
 
+    pub fn planets(&self) -> &[Rc<RefCell<Planet>>] {
+        self.planets.as_slice()
+    }
+
+    pub fn comets(&self) -> &[Rc<RefCell<Comet>>] {
+        self.comets.as_slice()
+    }
+    
     pub fn comets_count(&self) -> u8 {
         self.comets.count()
     }
@@ -374,15 +382,16 @@ impl SpaceState {
         let cleared_moving_objects = self.moving_objects.iter().enumerate()
             .filter_map(|(index, object)| {
                 match object.upgrade() {
-                    None => Some(index),
+                    None => Some(index as u8),
                     _ => None,
                 }
             })
             .rev()
             .collect::<Vec<_>>();
 
+
         cleared_moving_objects.into_iter().for_each(|index| {
-            self.moving_objects.remove(index);
+            self.moving_objects.remove(index as usize);
         });
     }
 
@@ -400,7 +409,7 @@ impl SpaceState {
 
             planet.satellites_mut().iter_mut().for_each(move |satellite| {
                 satellite.borrow_mut().reload(velocity, mass, orbit, radius);
-            })
+            });
         });
     }
 }

@@ -1,8 +1,8 @@
 use iced::{Point, Vector};
 
-use crate::objects::values::ObjectGravitationalForceValues;
-use crate::physics::quantities::Quantity;
-use crate::physics::quantities::quantity_units::{
+use crate::util::objects::values::ObjectGravitationalForceValues;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{
     KilogramMeterPerSecond, 
     Kilograms, 
     Kilometers, 
@@ -13,7 +13,7 @@ use crate::physics::quantities::quantity_units::{
     Newtons, 
     Seconds
 };
-use crate::physics::vector::VectorValue;
+use crate::util::physics::vector::VectorValue;
 
 /// F = 0 Н в векторной форме
 const ZERO_FORCE_VECTOR: VectorValue<Newtons> = VectorValue::new(
@@ -63,7 +63,7 @@ pub fn resulting_gravitational_force(
     // Векторы гравитационных сил взаимодействия между объектом и другими объектами
     let mut vectors_of_forces = other_objects_values.iter()
         .map(|other_object| {
-            vector_of_gravitational_force(&object_values, other_object)
+            vector_of_gravitational_force(object_values, other_object)
         });
 
     // Результирующая сила

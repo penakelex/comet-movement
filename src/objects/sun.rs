@@ -1,11 +1,10 @@
 use iced::Point;
 use iced::widget::image;
-use util::data::solar_system_data::SunData;
-use util::objects::consts::SolarSystemObjectConsts;
-use util::objects::Object;
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::{Kilograms, Kilometers};
-
+use crate::util::data::solar_system_data::SunData;
+use crate::util::objects::consts::SolarSystemObjectConsts;
+use crate::util::objects::{Object, ObjectView};
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
 
 pub struct Sun {
     consts: SolarSystemObjectConsts,
@@ -45,5 +44,19 @@ impl Object for Sun {
 
     fn image(&self) -> &image::Handle {
         &self.image
+    }
+}
+
+impl ObjectView for Sun {
+    fn image_view(&self) -> &image::Handle {
+        &self.image
+    }
+
+    fn name_view(&self) -> String {
+        self.name().to_string()
+    }
+
+    fn velocity_view(&self) -> String {
+        Quantity::new(KilometersPerSecond::new(0.)).to_string()
     }
 }

@@ -4,7 +4,7 @@ use std::ops::{Add, Div, Mul, Sub};
 use iced::Point;
 use num_traits::{Float, NumCast, ToPrimitive};
 
-use crate::physics::quantities::quantity_units::{
+use crate::util::physics::quantities::quantity_units::{
     InterimQuantityUnit,
     Kilometers,
     KilometersPerSecond,
@@ -57,20 +57,6 @@ impl Quantity<Kilometers> {
     /// Перевод из км в м
     pub fn to_meters(self) -> Quantity<Meters> {
         Quantity::new(Meters::new((self.value() as f64) * 1e3))
-    }
-}
-
-impl Quantity<Meters> {
-    /// Перевод из м в км
-    pub fn to_kilometers(self) -> Quantity<Kilometers> {
-        Quantity::new(Kilometers::new((self.value() / 1e3) as f32))
-    }
-}
-
-impl Quantity<KilometersPerSecond> {
-    /// Перевод из км/с в м/с
-    pub fn to_meters_per_second(self) -> Quantity<MetersPerSecond> {
-        Quantity::new(MetersPerSecond::new(self.value() as f64 * 1e3))
     }
 }
 

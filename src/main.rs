@@ -9,6 +9,7 @@ use crate::state::State;
 mod objects;
 mod state;
 mod views;
+mod util;
 
 pub fn main() -> iced::Result {
     application(SolarSystem::title, SolarSystem::update, SolarSystem::view)
@@ -31,6 +32,9 @@ enum Message {
     LeftButtonPressed(Point),
     LeftButtonReleased,
     PlayPauseToggle,
+    PlanetsViewToggle,
+    CometsViewToggle,
+    SatellitesViewToggle(String),
     Tick,
     IncreaseSpeed,
     DecreaseSpeed,
@@ -51,7 +55,7 @@ impl SolarSystem {
 
             Message::ScaleInputChange(scale_string) => self.state
                 .set_scale_from_input(scale_string),
-            
+
             Message::PlayPauseToggle => self.state.toggle_play_pause(),
 
             Message::IncreaseSpeed => self.state.increase_speed(),
@@ -69,6 +73,13 @@ impl SolarSystem {
             Message::LeftButtonReleased => self.state.on_left_button_released(),
 
             Message::Reload => self.state.reload(),
+            
+            Message::PlanetsViewToggle => self.state.planets_view_toggle(),
+            
+            Message::CometsViewToggle => self.state.comets_view_toggle(),
+            
+            Message::SatellitesViewToggle(planet_name) => self.state
+                .satellites_view_toggle(planet_name),
         }
     }
 
@@ -77,16 +88,9 @@ impl SolarSystem {
             .width(Fill)
             .height(Fill);
 
-        let panel = self.control_panel(
-            self.state.time.to_string(),
-            self.state.settings.speed().to_string(),
-            self.state.space.comets_count() as u32,
-        );
+        let panel = self.control_panel();
 
-        stack![
-            solar_system,
-            panel
-        ]
+        stack![solar_system, panel]
             .width(Fill)
             .height(Fill)
             .into()
@@ -97,7 +101,7 @@ impl SolarSystem {
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        if self.state.settings.running() {
+        if self.state.settings.is_running() {
             every(Duration::from_nanos(self.state.config.time_between_ticks_in_nanos() as u64))
                 .map(|_| Message::Tick)
         } else {

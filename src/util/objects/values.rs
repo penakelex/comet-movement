@@ -1,10 +1,10 @@
 use gset::Getset;
 use iced::Point;
 
-use crate::geometry::circle::Circle;
-use crate::objects::Object;
-use crate::physics::quantities::Quantity;
-use crate::physics::quantities::quantity_units::{Kilograms, Kilometers};
+use crate::util::geometry::circle::Circle;
+use crate::util::objects::Object;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers};
 
 /// Типаж значений объекта для вычисления гравитационной силы
 pub trait GravitationalForceValues {
@@ -74,8 +74,8 @@ impl From<ObjectFormValues> for Circle {
     fn from(value: ObjectFormValues) -> Self {
         let center_position = value.position();
         Circle::new(
-            Point::new(center_position.x.value() as f32, center_position.y.value() as f32),
-            value.radius().value() as f32,
+            Point::new(center_position.x.value(), center_position.y.value()),
+            value.radius().value(),
         )
     }
 }

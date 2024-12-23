@@ -1,11 +1,11 @@
 use gset::Getset;
 use iced::{Color, Point, Vector};
 
-use crate::objects::movement::trajectory::Trajectory;
-use crate::physics::formulas::end_position_after_moving;
-use crate::physics::quantities::Quantity;
-use crate::physics::quantities::quantity_units::{Kilometers, KilometersPerSecond, Seconds};
-use crate::physics::vector::VectorValue;
+use crate::util::objects::movement::trajectory::Trajectory;
+use crate::util::physics::formulas::end_position_after_moving;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilometers, KilometersPerSecond, Seconds};
+use crate::util::physics::vector::VectorValue;
 
 pub mod trajectory;
 
@@ -33,9 +33,11 @@ impl ObjectMovement {
             y: Quantity::new(Kilometers::new(0.)),
         };
 
+        let velocity_vector = Vector::new(-1e-10, 1.);
+
         Self {
-            velocity: VectorValue::new(velocity, Vector::new(0., 1.)),
-            trajectory: Trajectory::new(starting_position, trajectory_color),
+            velocity: VectorValue::new(velocity, velocity_vector),
+            trajectory: Trajectory::new(velocity_vector, starting_position, trajectory_color),
             position: starting_position,
         }
     }
@@ -46,10 +48,12 @@ impl ObjectMovement {
         starting_position: Point<Quantity<Kilometers>>,
         trajectory_color: Color,
     ) -> Self {
+        let velocity_vector = velocity.unit_vector;
+
         Self {
             velocity,
             position: starting_position,
-            trajectory: Trajectory::new(starting_position, trajectory_color),
+            trajectory: Trajectory::new(velocity_vector, starting_position, trajectory_color),
         }
     }
 }
@@ -64,12 +68,8 @@ impl ObjectMovement {
     }
 
     /// Масштабированая траектория с пропуском некоторых позиций
-    pub fn stepped_scaled_trajectory<'a>(
-        &'a self,
-        step: u32,
-        scale: f32,
-    ) -> impl Iterator<Item=Point> + 'a {
-        self.trajectory.stepped_scaled_positions(step, scale)
+    pub fn trajectory(&self, step: u32, scale: f32) -> impl Iterator<Item=Point> + '_ {
+        self.trajectory.positions(step, scale)
     }
 }
 
@@ -80,8 +80,6 @@ impl ObjectMovement {
         velocity_change: VectorValue<KilometersPerSecond>,
         time_interval: Quantity<Seconds>,
     ) {
-        self.trajectory.add_position(self.position);
-
         self.position = end_position_after_moving(
             self.velocity.clone(),
             velocity_change.clone(),
@@ -90,5 +88,7 @@ impl ObjectMovement {
         );
 
         self.velocity = (self.velocity.clone() + velocity_change).parse();
+
+        self.trajectory.add_position(self.position, self.velocity.unit_vector);
     }
 }

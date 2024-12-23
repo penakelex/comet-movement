@@ -2,16 +2,17 @@ use gset::Getset;
 use iced::{Color, Point, Vector};
 use iced::widget::image;
 use rand::{Rng, thread_rng};
-use util::data::solar_system_data::CometData;
-use util::objects::{Object, ObjectMotion};
-use util::objects::movement::ObjectMovement;
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::{
+use rand::rngs::ThreadRng;
+use crate::util::data::solar_system_data::CometData;
+use crate::util::objects::{Object, ObjectMotion};
+use crate::util::objects::movement::ObjectMovement;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{
     Kilograms,
     Kilometers,
     KilometersPerSecond,
 };
-use util::physics::vector::VectorValue;
+use crate::util::physics::vector::VectorValue;
 
 /// Комета
 pub struct Comet {
@@ -34,27 +35,29 @@ impl Comet {
         image_index: u8,
         trajectory_color_index: u8,
     ) -> Self {
+        let mut thread_rng = thread_rng();
+
         let starting_velocity = Quantity::new(
             KilometersPerSecond::new(
-                Self::generate_starting_velocity(comet_possible_values.velocities())
+                Self::generate_starting_velocity(comet_possible_values.velocities(), &mut thread_rng)
             )
         );
 
         let movement = ObjectMovement::new_comet_movement(
             VectorValue::new(
                 starting_velocity,
-                Self::generate_starting_velocity_vector(),
+                Self::generate_starting_velocity_vector(&mut thread_rng),
             ),
-            Self::generate_starting_position(),
+            Self::generate_starting_position(&mut thread_rng),
             comet_possible_values.get_color_by_index(trajectory_color_index),
         );
 
         let mass = Quantity::new(
-            Kilograms::new(Self::generate_mass(comet_possible_values.masses))
+            Kilograms::new(Self::generate_mass(comet_possible_values.masses, &mut thread_rng))
         );
 
         let radius = Quantity::new(
-            Kilometers::new(Self::generate_radius(comet_possible_values.radii))
+            Kilometers::new(Self::generate_radius(comet_possible_values.radii, &mut thread_rng))
         );
 
         let image = comet_possible_values.get_image_by_index(image_index).clone();
@@ -69,9 +72,7 @@ impl Comet {
     }
 
     /// Генерация начального положения
-    fn generate_starting_position() -> Point<Quantity<Kilometers>> {
-        let mut rng = thread_rng();
-
+    fn generate_starting_position(rng: &mut ThreadRng) -> Point<Quantity<Kilometers>> {
         Point {
             x: Quantity::new(Kilometers::new(rng.gen_range(-1e8..=1e8))),
             y: Quantity::new(Kilometers::new(rng.gen_range(-1e8..=1e8))),
@@ -79,16 +80,14 @@ impl Comet {
     }
 
     /// Генерация начальной скорости
-    fn generate_starting_velocity(possible_velocities: (f32, f32)) -> f32 {
-        thread_rng().gen_range(possible_velocities.0..=possible_velocities.1)
+    fn generate_starting_velocity(possible_velocities: (f32, f32), rng: &mut ThreadRng) -> f32 {
+        rng.gen_range(possible_velocities.0..=possible_velocities.1)
     }
 
     /// Генерация единичного вектора начальной скорости
-    fn generate_starting_velocity_vector() -> Vector {
-        let mut thread_rng = thread_rng();
-
-        let velocity_x = thread_rng.gen_range(-1.0_f32..=1.);
-        let velocity_y = thread_rng.gen_range(-1.0_f32..=1.);
+    fn generate_starting_velocity_vector(rng: &mut ThreadRng) -> Vector {
+        let velocity_x = rng.gen_range(-1.0_f32..=1.);
+        let velocity_y = rng.gen_range(-1.0_f32..=1.);
         let velocity_vector_length = (velocity_x * velocity_x + velocity_y * velocity_y).sqrt();
 
         Vector::new(
@@ -98,13 +97,13 @@ impl Comet {
     }
 
     /// Генерация массы
-    fn generate_mass(possible_masses: (f32, f32)) -> f64 {
-        thread_rng().gen_range(possible_masses.0..=possible_masses.1) as f64
+    fn generate_mass(possible_masses: (f32, f32), rng: &mut ThreadRng) -> f64 {
+        rng.gen_range(possible_masses.0..=possible_masses.1) as f64
     }
 
     /// Генерация радиуса
-    fn generate_radius(possible_radii: (f32, f32)) -> f32 {
-        thread_rng().gen_range(possible_radii.0..=possible_radii.1)
+    fn generate_radius(possible_radii: (f32, f32), rng: &mut ThreadRng) -> f32 {
+        rng.gen_range(possible_radii.0..=possible_radii.1)
     }
 }
 
@@ -124,7 +123,7 @@ impl Object for Comet {
     fn position(&self) -> Point<Quantity<Kilometers>> {
         self.movement.position()
     }
-    
+
     fn image(&self) -> &image::Handle {
         &self.image
     }
@@ -163,7 +162,7 @@ impl CometPossibleValues {
     pub fn get_image_by_index(&self, index: u8) -> &image::Handle {
         &self.images[index as usize]
     }
-    
+
     /// Получение цвета по индексу
     pub fn get_color_by_index(&self, index: u8) -> Color {
         self.colors[index as usize]
@@ -174,7 +173,7 @@ impl CometPossibleValues {
     pub fn images(&self) -> &[image::Handle] {
         self.images.as_slice()
     }
-    
+
     pub fn colors(&self) -> &[Color] {
         self.colors.as_slice()
     }
@@ -194,7 +193,7 @@ impl CometPossibleValues {
                 image::Handle::from_path(format!("{path_to_images}/{image_filename}"))
             })
             .collect::<Vec<_>>();
-        
+
         Self {
             velocities: (velocities[0], velocities[1]),
             masses: (masses[0], masses[1]),

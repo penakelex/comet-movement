@@ -7,8 +7,8 @@ use iced::mouse::{Button, Cursor, ScrollDelta};
 use iced::widget::canvas;
 use iced::widget::canvas::{Event, Frame, Geometry, Path, Stroke, Style};
 use tap::TapOptional;
-use util::geometry::point::translate_point;
-use util::objects::{MovingObject, Object};
+use crate::util::geometry::point::translate_point;
+use crate::util::objects::{MovingObject, Object};
 
 use crate::Message;
 use crate::objects::stars::Star;
@@ -30,12 +30,12 @@ fn draw_stars(frame: &mut Frame, stars: &[Star]) {
     let stars = Path::new(|path| {
         let half_width = frame.width() / 2.;
         let half_height = frame.height() / 2.;
-        stars.iter().for_each(|Star { relative_point, size }| {
-            path.circle(
+        stars.iter().for_each(|Star { relative_point, size }| path
+            .circle(
                 Point::new(relative_point.x * half_width, relative_point.y * half_height),
                 *size,
             )
-        });
+        );
     });
 
     frame.translate(frame.center() - Point::ORIGIN);
@@ -47,7 +47,7 @@ fn draw_system(
     frame: &mut Frame,
     center_position: Point,
     bounds: Rectangle,
-    scale: u64,
+    scale: u32,
     step: u32,
     all_objects: &[Weak<RefCell<dyn Object>>],
     moving_objects: &[Weak<RefCell<dyn MovingObject>>],
@@ -69,7 +69,7 @@ fn draw_system(
 /// Отрисовка орбит (траекторий) объектов
 fn draw_object_orbit(
     frame: &mut Frame,
-    scale: u64,
+    scale: u32,
     center_position: Point,
     bounds: Rectangle,
     object: Ref<dyn MovingObject>,
@@ -112,14 +112,14 @@ fn draw_object_orbit(
         &path,
         Stroke {
             style: Style::Solid(object.trajectory_color()),
-            width: 0.5,
+            width: 2.,
             ..Stroke::default()
         },
     )
 }
 
 /// Отрисовка объекта
-fn draw_object(frame: &mut Frame, scale: u64, object: Ref<dyn Object>) {
+fn draw_object(frame: &mut Frame, scale: u32, object: Ref<dyn Object>) {
     let radius = object.scaled_radius(scale);
     let position = object.scaled_position(scale);
 
@@ -134,11 +134,10 @@ fn draw_object(frame: &mut Frame, scale: u64, object: Ref<dyn Object>) {
 impl canvas::Program<Message> for State {
     type State = ();
 
-    fn update(
-        &self,
-        _state: &mut Self::State,
+    fn update(&self,
+        _: &mut Self::State,
         event: Event,
-        _bounds: Rectangle,
+        _: Rectangle,
         cursor: Cursor,
     ) -> (Status, Option<Message>) {
         match event {
@@ -176,17 +175,12 @@ impl canvas::Program<Message> for State {
 
     fn draw(
         &self,
-        _state: &Self::State,
+        _: &Self::State,
         renderer: &Renderer,
-        _theme: &Theme,
+        _: &Theme,
         bounds: Rectangle,
-        _cursor: Cursor,
+        _: Cursor,
     ) -> Vec<Geometry<Renderer>> {
-        let center_position = self.system_position.center_position();
-
-        let orbits_step_between_points =
-            (self.settings.scale().value() / self.config.step_formation() as u64) as u32 + 1;
-
         let stars = self.cache.stars().draw(
             renderer,
             bounds.size(),
@@ -198,10 +192,10 @@ impl canvas::Program<Message> for State {
             bounds.size(),
             |frame| draw_system(
                 frame,
-                center_position,
+                self.system_position.center_position(),
                 bounds,
                 self.settings.scale().value(),
-                orbits_step_between_points,
+                self.step(),
                 self.space.all_objects(),
                 self.space.moving_objects(),
             ),

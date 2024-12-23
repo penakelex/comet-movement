@@ -1,6 +1,6 @@
 use gset::Getset;
-use crate::physics::quantities::Quantity;
-use crate::physics::quantities::quantity_units::{Kilograms, Kilometers};
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers};
 
 /// Константы объекта Солнечной системы
 #[derive(Getset)]

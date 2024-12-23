@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::Seconds;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::Seconds;
 
 /// Скорость симуляции
 pub enum Speed {
@@ -14,8 +14,8 @@ pub enum Speed {
 }
 
 impl Speed {
-    /// *[base_time_between_ticks] - 
-    /// Базовый промежуток времени между двуями тиками ([`Time`](util::time::Time))
+    /// [base_time_between_ticks] - 
+    /// Базовый промежуток времени между двуями тиками ([`Time`](crate::util::time::Time))
     pub fn new(base_time_between_ticks: u16) -> Self {
         Self::X1(base_time_between_ticks)
     }

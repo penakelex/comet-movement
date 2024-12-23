@@ -4,10 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-util = { path = "util" }
 iced = { version = "0.13", features = ["advanced", "canvas", "image", "tokio"] }
 rand = "0.8"
 num-traits = "0.2"
 serde_json = "1.0"
 gset = "1.1"
 tap = "1.0"
+
+serde = { version = "1.0", features = ["derive"] }
+dotenv = "0.15"

@@ -5,7 +5,7 @@ use std::rc::Rc;
 use gset::Getset;
 use rand::prelude::IteratorRandom;
 use rand::thread_rng;
-use util::objects::{MovingObject, Object};
+use crate::util::objects::{MovingObject, Object};
 
 use crate::objects::comet::{Comet, CometPossibleValues};
 

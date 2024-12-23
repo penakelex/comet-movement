@@ -1,12 +1,12 @@
 use iced::{Color, Point};
 use iced::widget::image;
-use util::data::solar_system_data::SatelliteData;
-use util::objects::{Object, ObjectMotion};
-use util::objects::consts::SolarSystemObjectConsts;
-use util::objects::movement::ObjectMovement;
-use util::physics::formulas::orbital_velocity;
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
+use crate::util::data::solar_system_data::SatelliteData;
+use crate::util::objects::{Object, ObjectMotion};
+use crate::util::objects::consts::SolarSystemObjectConsts;
+use crate::util::objects::movement::ObjectMovement;
+use crate::util::physics::formulas::orbital_velocity;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
 
 /// Спутник
 pub struct Satellite {

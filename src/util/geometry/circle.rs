@@ -19,5 +19,6 @@ impl Circle {
 pub fn is_circles_have_common_points(circle1: &Circle, circle2: &Circle) -> bool {
     let distance = (circle2.center.x - circle1.center.x)
         .hypot(circle2.center.y - circle1.center.y);
+
     circle1.radius + circle2.radius >= distance
 }

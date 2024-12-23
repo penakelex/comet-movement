@@ -1,5 +1,4 @@
 use iced::Point;
-use util::time::Time;
 
 use crate::state::caches::StateCache;
 use crate::state::config::Config;
@@ -7,6 +6,8 @@ use crate::state::redraw::RedrawState;
 use crate::state::settings::Settings;
 use crate::state::space::SpaceState;
 use crate::state::system_position::{CursorPinch, SolarSystemPositionState};
+use crate::state::view::ViewState;
+use crate::util::time::Time;
 
 mod caches;
 mod canvas;
@@ -15,9 +16,11 @@ mod system_position;
 mod settings;
 mod space;
 mod redraw;
+mod view;
 
 /// Состояния программы
 pub struct State {
+    pub view: ViewState,
     /// Кеши
     pub cache: StateCache,
     /// Время
@@ -52,7 +55,10 @@ impl State {
             config.maximum_number_of_comets(),
         );
 
+        let view = ViewState::new(space.planets());
+
         State {
+            view,
             cache: StateCache::default(),
             time: Time::new(),
             settings,
@@ -61,6 +67,12 @@ impl State {
             config,
             redraw,
         }
+    }
+}
+
+impl State {
+    fn step(&self) -> u32 {
+        self.settings.scale().value() / self.config.step_formation() + 1
     }
 }
 
@@ -77,23 +89,29 @@ impl State {
 
     /// Изменение масштаба
     pub fn change_scale(&mut self, scale_change: i16) {
-        let scale_change_factor = self.config.base_scale_change_factor() as u64
-            * (self.settings.scale().value() / self.config.step_formation() as u64 + 1);
+        let scale_change_factor = self.config.base_scale_change_factor()
+            * (self.settings.scale().value() / self.config.step_formation() + 1);
 
         let scale =
             if scale_change.is_positive() {
                 match self.settings.scale().value()
-                    .checked_sub(scale_change_factor * (scale_change as u64))
+                    .checked_sub(scale_change_factor * (scale_change as u32))
                 {
                     Some(scale) if scale != 0 => scale,
-                    _ => return
+                    _ => {
+                        self.view.set_incorrect_scale_color();
+                        return;
+                    }
                 }
             } else {
                 match self.settings.scale().value()
-                    .checked_add(scale_change_factor * (-scale_change as u64))
+                    .checked_add(scale_change_factor * (-scale_change as u32))
                 {
                     Some(scale) => scale,
-                    _ => return,
+                    _ => {
+                        self.view.set_incorrect_scale_color();
+                        return;
+                    }
                 }
             };
 
@@ -110,15 +128,14 @@ impl State {
 
     /// Изменение масштаба по вводу
     pub fn set_scale_from_input(&mut self, scale_string: String) {
-        match scale_string.trim().parse::<u64>() {
+        match scale_string.trim().parse::<u32>() {
             Ok(scale) => {
                 self.settings.scale_mut().set_value(scale);
                 self.cache.clear_system();
+                self.view.set_correct_scale_color();
             }
 
-            _ => {
-                //TODO: Возможно, поменять цвет текста на красный, например
-            }
+            _ => self.view.set_incorrect_scale_color(),
         }
 
         self.settings.scale_mut().set_string_value(scale_string);
@@ -166,18 +183,30 @@ impl State {
         self.system_position.set_pinch(CursorPinch::NotClamped);
         self.system_position.clear_cursor_position();
     }
-    
+
     /// Перезагрука симуляции
     pub fn reload(&mut self) {
         self.time.restart();
         self.settings.reload(
-            self.config.seconds_per_tick().value() as u16, 
-            self.config.default_scale()
+            self.config.seconds_per_tick().value() as u16,
+            self.config.default_scale(),
         );
         self.space.reload();
         self.system_position.reload();
         self.redraw.reload();
         self.cache.clear_all();
+    }
+    
+    pub fn planets_view_toggle(&mut self) {
+        self.view.toggle_planets_view();
+    }
+    
+    pub fn comets_view_toggle(&mut self) {
+        self.view.toggle_comets_view();
+    }
+    
+    pub fn satellites_view_toggle(&mut self, planet_name: String) {
+        self.view.toggle_satellites_view(planet_name);
     }
 }
 

@@ -67,13 +67,13 @@
       "image_filename": "jupiter.png",
       "satellites": [
         {
-          "name": "Europa",
+          "name": "Europe",
           "consts": {
             "mass": 4.8017e22,
             "orbit": 664862.0,
             "radius": 1560.8
           },
-          "image_filename": "europa.png"
+          "image_filename": "europe.png"
         },
         {
           "name": "Io",

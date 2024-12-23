@@ -1,7 +1,7 @@
 use gset::Getset;
-use util::data::config_data::ConfigData;
-use util::physics::quantities::Quantity;
-use util::physics::quantities::quantity_units::Seconds;
+use crate::util::data::config_data::ConfigData;
+use crate::util::physics::quantities::Quantity;
+use crate::util::physics::quantities::quantity_units::Seconds;
 
 /// Данные из файла конфигурации
 #[derive(Getset)]
@@ -26,7 +26,7 @@ pub struct Config {
     ticks_between_redraws: u32,
     /// Начальное значение масштаба
     #[getset(get_copy, vis = "pub")]
-    default_scale: u64,
+    default_scale: u32,
     /// Количество фоновых звёзд
     #[getset(get_copy, vis = "pub")]
     background_stars_count: u16,

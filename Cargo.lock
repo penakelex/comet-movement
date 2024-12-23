@@ -586,13 +586,14 @@ dependencies = [
 name = "comet-movement"
 version = "0.1.0"
 dependencies = [
+ "dotenv",
  "gset",
  "iced",
  "num-traits",
  "rand",
+ "serde",
  "serde_json",
  "tap",
- "util",
 ]
 
 [[package]]
@@ -3513,18 +3514,6 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
-
-[[package]]
-name = "util"
-version = "0.1.0"
-dependencies = [
- "dotenv",
- "gset",
- "iced",
- "num-traits",
- "serde",
- "tap",
-]
 
 [[package]]
 name = "version_check"

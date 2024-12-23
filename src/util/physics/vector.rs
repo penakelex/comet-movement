@@ -3,8 +3,8 @@ use std::ops::{Add, Div, Mul};
 use iced::Vector;
 use num_traits::{Float, NumCast, ToPrimitive};
 
-use crate::physics::quantities::{NewQuantity, Quantity, QuantityUnit};
-use crate::physics::quantities::quantity_units::{
+use crate::util::physics::quantities::{NewQuantity, Quantity, QuantityUnit};
+use crate::util::physics::quantities::quantity_units::{
     InterimQuantityUnit,
     KilometersPerSecond,
     MetersPerSecond,
@@ -15,7 +15,7 @@ use crate::physics::quantities::quantity_units::{
 pub type VectorValue<T>
 where
     T: QuantityUnit + NewQuantity + Copy + Clone,
-= crate::geometry::vector::VectorValue<Quantity<T>, T::Value>;
+= crate::util::geometry::vector::VectorValue<Quantity<T>, T::Value>;
 
 impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
     pub fn to_vector(&self) -> Vector<T::Value> {
@@ -25,7 +25,7 @@ impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
         )
     }
 
-    pub fn to_quantity_vector(self) -> Vector<Quantity<T>> {
+    pub fn to_quantity_vector(&self) -> Vector<Quantity<T>> {
         Vector::new(
             Quantity::new(T::new(self.value.value() * self.unit_vector.x)),
             Quantity::new(T::new(self.value.value() * self.unit_vector.y)),
@@ -51,11 +51,8 @@ impl VectorValue<InterimQuantityUnit> {
 
 impl VectorValue<MetersPerSecond> {
     /// Перевод скорости из м/с в км/с
-    pub fn to_kilometers_per_second(self) -> VectorValue<KilometersPerSecond> {
-        let unit_vector = Vector::new(
-            self.unit_vector.x as f32,
-            self.unit_vector.y as f32,
-        );
+    pub fn to_kilometers_per_second(&self) -> VectorValue<KilometersPerSecond> {
+        let unit_vector = Vector::new(self.unit_vector.x as f32, self.unit_vector.y as f32);
 
         VectorValue::new(self.value.to_kilometers_per_second(), unit_vector)
     }
