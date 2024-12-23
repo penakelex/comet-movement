@@ -12,6 +12,7 @@ use crate::objects::planet::Planet;
 use crate::util::objects::{Object, ObjectView};
 
 impl SolarSystem {
+    /// Панель с информацией объектами и управлением ими
     pub fn objects_panel(&self) -> Element<Message> {
         let sun = self.sun();
         let planets = self.planets();
@@ -27,12 +28,14 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Карточка Солнца
     fn sun(&self) -> Element<Message> {
         self.object_card(self.state.space.sun().clone())
     }
 }
 
 impl SolarSystem {
+    /// Набор карт комет
     fn comets(&self) -> Element<Message> {
         let is_opened = self.state.view.comets_views_opened();
 
@@ -84,6 +87,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Набор карт планет
     fn planets(&self) -> Element<Message> {
         let is_opened = self.state.view.planets_views_opened();
 
@@ -115,6 +119,7 @@ impl SolarSystem {
             .into()
     }
 
+    /// Карта планеты и карты её спутников
     fn planet_with_satellite(&self, planet: Rc<RefCell<Planet>>) -> Element<Message> {
         let planet_card = self.object_card(planet.clone());
 
@@ -171,6 +176,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Карта объекта
     fn object_card(&self, object: Rc<RefCell<dyn ObjectView>>) -> Element<Message> {
         let (image, name, velocity) = self.object_attributes(object.clone());
 
@@ -189,6 +195,7 @@ impl SolarSystem {
             .into()
     }
 
+    /// Карта кометы
     fn comet_card(&self, comet: Rc<RefCell<Comet>>, comet_index: u8) -> Element<Message> {
         let (image, name, velocity) = self.object_attributes(comet.clone());
 
@@ -218,6 +225,7 @@ impl SolarSystem {
             .into()
     }
 
+    /// Аттрибуты объекта (картинка, название, скорость)
     fn object_attributes(
         &self,
         object: Rc<RefCell<dyn ObjectView>>,
@@ -250,6 +258,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Фоновый цвет контейнера
     fn container_background_style() -> Style {
         Style {
             background: Some(Background::Color(Self::background_color())),

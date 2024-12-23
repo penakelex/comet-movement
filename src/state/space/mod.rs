@@ -177,20 +177,24 @@ impl SpaceState {
                 satellites
             } = planet_data;
 
+            // Генерация цвета планеты
             let planet_trajectory_color =
                 Self::generate_object_trajectory_color(trajectory_colors_values);
 
+            // Вычисление орбитальной скорости планеты
             let planet_velocity = orbital_velocity(
                 sun_mass,
                 Quantity::new(Kilometers::new(planet_consts.orbit)),
             );
 
+            // Начальное положение планеты
             let planet_initial_position = Planet::initial_position(
                 sun_radius,
                 planet_consts.orbit,
                 planet_consts.radius,
             );
 
+            // Создание спутников
             let satellites = satellites.into_iter()
                 .map(|satellite_data| {
                     let satellite_trajectory_color =
@@ -221,12 +225,13 @@ impl SpaceState {
             .collect::<Vec<Planet>>()
     }
 
-    /// Генерация цвета траектории объекта
+    /// Генерация неповторяющегося цвета траектории объекта
     fn generate_object_trajectory_color(
         trajectory_colors_values: &mut HashSet<(u8, u8, u8)>
     ) -> Color {
         let mut rng = thread_rng();
         loop {
+            // Цвет объекта (R, G, B)
             let color_values = (
                 rng.gen_range(0..255_u8),
                 rng.gen_range(0..255_u8),
@@ -270,12 +275,14 @@ impl SpaceState {
 impl SpaceState {
     /// Движение объектов
     pub fn move_objects(&mut self, seconds_per_tick: Quantity<Seconds>) {
+        // Получение позиции и массы объектов
         let objects_gravitational_values = self.all_objects.iter()
             .filter_map(|object| object.upgrade()
                 .map(|object_rc| object_rc.borrow().gravitational_force_values())
             )
             .collect::<Vec<_>>();
 
+        // Получение изменения скорости движущихся объектов
         let velocities_changes = self.moving_objects.iter()
             .filter_map(|object| object.upgrade()
                 .map(|object_rc| {
@@ -292,6 +299,7 @@ impl SpaceState {
             )
             .collect::<HashMap<String, VectorValue<KilometersPerSecond>>>();
 
+        // Изменение скорости
         self.moving_objects.iter().for_each(|object| {
             object.upgrade().tap_some(|object_rc| {
                 let object_name = object_rc.borrow().name().to_string();
@@ -305,8 +313,9 @@ impl SpaceState {
 }
 
 impl SpaceState {
-    /// Удаление комет столкнувшихся в другой объект
+    /// Удаление комет, столкнувшихся в другой объект
     pub fn remove_crashed_comets(&mut self) {
+        // Получение объектов как кругов
         let circles = self.all_objects.iter()
             .filter_map(|object| object.upgrade()
                 .map(|object_rc| {
@@ -317,6 +326,7 @@ impl SpaceState {
 
         let mut crashed_indices = Vec::new();
 
+        // Поиск комет, которые столкнулись с другими объектами
         self.comets.as_slice().iter().enumerate().for_each(|(index, comet)| {
             let comet_as_object: Rc<RefCell<dyn Object>> = comet.clone();
             let comet_weak_reference = Rc::downgrade(&comet_as_object);
@@ -333,6 +343,7 @@ impl SpaceState {
             }
         });
 
+        // Удаление столкнувшихся комет
         crashed_indices.into_iter().rev()
             .for_each(|index| self.comets.delete_comet(index));
     }
@@ -355,6 +366,7 @@ impl SpaceState {
 }
 
 impl SpaceState {
+    // При перезагрузке симуляции
     pub fn reload(&mut self) {
         self.comets.reload();
         self.filter_from_cleared_objects();
@@ -362,6 +374,7 @@ impl SpaceState {
         self.reload_planets_and_satellites();
     }
 
+    // Очищаем удалённые объекты
     fn filter_from_cleared_objects(&mut self) {
         let cleared_objects = self.all_objects.iter().enumerate()
             .filter_map(|(index, object)| {
@@ -378,6 +391,7 @@ impl SpaceState {
         });
     }
 
+    // Очищаем удалённые движущиеся объекты
     fn filter_from_cleared_moving_objects(&mut self) {
         let cleared_moving_objects = self.moving_objects.iter().enumerate()
             .filter_map(|(index, object)| {
@@ -395,6 +409,7 @@ impl SpaceState {
         });
     }
 
+    // Обновляем данные планет и спутников
     fn reload_planets_and_satellites(&mut self) {
         let sun_mass = self.sun.borrow().mass();
         self.planets.iter_mut().for_each(|planet| {

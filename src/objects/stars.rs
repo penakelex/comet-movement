@@ -13,6 +13,7 @@ pub struct Star {
 impl Star {
     /// Генерация новой звезды
     pub fn generate(rng: &mut ThreadRng) -> Self {
+        // Позиция относительно размеров окна
         let relative_point = Point::new(
             rng.gen_range(-1.0..=1.0),
             rng.gen_range(-1.0..=1.0),

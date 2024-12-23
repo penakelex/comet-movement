@@ -73,11 +73,11 @@ impl SolarSystem {
             Message::LeftButtonReleased => self.state.on_left_button_released(),
 
             Message::Reload => self.state.reload(),
-            
+
             Message::PlanetsViewToggle => self.state.planets_view_toggle(),
-            
+
             Message::CometsViewToggle => self.state.comets_view_toggle(),
-            
+
             Message::SatellitesViewToggle(planet_name) => self.state
                 .satellites_view_toggle(planet_name),
         }

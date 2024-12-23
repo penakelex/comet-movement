@@ -41,18 +41,21 @@ impl Planet {
         path_to_image: String,
         satellites: Vec<Satellite>,
     ) -> Self {
+        // Запись констант
         let consts = SolarSystemObjectConsts::new(
             planet_consts.mass,
             planet_consts.orbit,
             planet_consts.radius,
         );
 
+        // Создание движения планеты
         let movement = ObjectMovement::new_solar_system_object_movement(
             velocity,
             initial_position,
             trajectory_color,
         );
 
+        // Запись спутников
         let satellites = satellites.into_iter()
             .map(|satellite| Rc::new(RefCell::new(satellite)))
             .collect();
@@ -119,12 +122,14 @@ impl ObjectMotion for Planet {
 }
 
 impl Planet {
+    // При перезагрузке симуляции
     pub fn reload(&mut self, sun_mass: Quantity<Kilograms>) {
         let velocity = orbital_velocity(
             sun_mass,
             Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
         );
 
+        // Обновление движения
         self.movement = ObjectMovement::new_solar_system_object_movement(
             velocity,
             self.consts.initial_orbit().value(),

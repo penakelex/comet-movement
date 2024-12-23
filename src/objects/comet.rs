@@ -37,12 +37,14 @@ impl Comet {
     ) -> Self {
         let mut thread_rng = thread_rng();
 
+        // Генерация начальной скорости
         let starting_velocity = Quantity::new(
             KilometersPerSecond::new(
                 Self::generate_starting_velocity(comet_possible_values.velocities(), &mut thread_rng)
             )
         );
 
+        // Создание движения объекта
         let movement = ObjectMovement::new_comet_movement(
             VectorValue::new(
                 starting_velocity,
@@ -52,14 +54,17 @@ impl Comet {
             comet_possible_values.get_color_by_index(trajectory_color_index),
         );
 
+        // Перевод массы в физическую величину
         let mass = Quantity::new(
             Kilograms::new(Self::generate_mass(comet_possible_values.masses, &mut thread_rng))
         );
 
+        // Перевод радиуса в физическую величину
         let radius = Quantity::new(
             Kilometers::new(Self::generate_radius(comet_possible_values.radii, &mut thread_rng))
         );
 
+        // Получение картинки из имеющихся
         let image = comet_possible_values.get_image_by_index(image_index).clone();
 
         Self {
@@ -188,6 +193,7 @@ impl CometPossibleValues {
             images_filenames,
         } = data;
 
+        // Получение картинок комет из файлов
         let images = images_filenames.into_iter()
             .map(|image_filename| {
                 image::Handle::from_path(format!("{path_to_images}/{image_filename}"))

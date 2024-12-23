@@ -8,13 +8,18 @@ use iced::Color;
 use crate::objects::planet::Planet;
 use crate::util::objects::Object;
 
+/// Состояние UI
 #[derive(Getset)]
 pub struct ViewState {
+    /// Открыты ли меню спутников планет
     satellites_views_opened: HashMap<String, bool>,
+    /// Открыта ли меню планет
     #[getset(get_copy, vis = "pub")]
     planets_views_opened: bool,
+    /// Открыта ли меню комет
     #[getset(get_copy, vis = "pub")]
     comets_views_opened: bool,
+    /// Цвет текста ввода масштаба
     #[getset(get_copy, vis = "pub")]
     scale_input_color: Color,
 }

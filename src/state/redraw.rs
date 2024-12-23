@@ -2,7 +2,9 @@ use tap::Tap;
 
 /// Состояние повторной отрисовки
 pub struct RedrawState {
+    /// Тиков до новой отрисовки
     ticks_until_redraw: u32,
+    /// Тиков между отрисовками
     ticks_between_redraws: u32,
 }
 

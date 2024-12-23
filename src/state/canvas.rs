@@ -54,12 +54,14 @@ fn draw_system(
 ) {
     translate_frame_to_new_center(frame, center_position);
 
+    // Отрисовка орбит объектов
     moving_objects.iter().for_each(|object| {
         object.upgrade().tap_some(|object_rc| {
             draw_object_orbit(frame, scale, center_position, bounds, object_rc.borrow(), step)
         });
     });
 
+    // Отрисовка объектов
     all_objects.iter().for_each(|object| {
         object.upgrade()
             .tap_some(|object_rc| draw_object(frame, scale, object_rc.borrow()));
@@ -82,8 +84,10 @@ fn draw_object_orbit(
             frame_center.y + center_position.y,
         );
 
+        // Масшабированные позиции объекта с шагом, зависимым от масштаба
         let mut object_positions = object.trajectory(step, scale as f32);
 
+        // Проверяем и передвигаем начальную позицию орбиты
         let first_position = object_positions.next().unwrap();
 
         builder.move_to(first_position);
@@ -92,18 +96,23 @@ fn draw_object_orbit(
             .contains(translate_point(first_position, system_center_position, Point::ORIGIN));
 
         for position in object_positions {
+            // Позиция внутри окна
             if bounds.contains(translate_point(position, system_center_position, Point::ORIGIN)) {
+                // Отрисовываем линию к позиции
                 builder.line_to(position);
                 is_last_position_was_inside = true;
                 continue;
             }
 
+            // Позиция не внутри, но предыдущая была внутри
             if is_last_position_was_inside {
+                // Отрисовываем линию к позиции
                 builder.line_to(position);
                 is_last_position_was_inside = false;
                 continue;
             }
 
+            // Передвигаем курсор, не отрисовывая ничего
             builder.move_to(position);
         }
     });

@@ -36,17 +36,20 @@ impl Satellite {
             image_filename,
         } = satellite_data;
 
+        // Вычисление орбитальной скорости вокруг планеты
         let velocity = orbital_velocity(
             Quantity::new(Kilograms::new(planet_mass)),
             Quantity::new(Kilometers::new(satellite_consts.orbit)),
         );
 
+        // Запись констант
         let consts = SolarSystemObjectConsts::new(
             satellite_consts.mass,
             satellite_consts.orbit,
             satellite_consts.radius,
         );
 
+        // Создание движения спутника
         let movement = ObjectMovement::new_solar_system_object_movement(
             (velocity + planet_velocity).parse(),
             planet_initial_orbit + planet_radius + satellite_consts.orbit,
@@ -95,6 +98,7 @@ impl ObjectMotion for Satellite {
 }
 
 impl Satellite {
+    // При перезагрузке симуляции
     pub fn reload(
         &mut self,
         planet_velocity: Quantity<KilometersPerSecond>,
@@ -107,6 +111,7 @@ impl Satellite {
             Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
         );
         
+        // Обновление движение
         self.movement = ObjectMovement::new_solar_system_object_movement(
             (velocity + planet_velocity).parse(),
             planet_initial_orbit + planet_radius + self.consts.initial_orbit().value(),

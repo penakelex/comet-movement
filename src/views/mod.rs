@@ -7,6 +7,7 @@ use crate::{Message, SolarSystem};
 mod objects;
 
 impl SolarSystem {
+    /// Главная панель управления симуляцией
     pub fn control_panel(&self) -> Element<Message> {
         let panels = column![
             self.time_panel(),
@@ -33,6 +34,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Отображение времени
     fn time_panel(&self) -> Element<Message> {
         text(self.state.time.to_string())
             .size(20)
@@ -42,6 +44,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Регулирование масштаба
     fn scale_panel(&self) -> Element<Message> {
         let scale_text: Element<_> = text!("1:")
             .size(18)
@@ -84,6 +87,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Запуск/остановка симуляции
     fn play_toggle_panel(&self) -> Element<Message> {
         let is_running = self.state.settings.is_running();
 
@@ -96,6 +100,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Изменение и отображение скорости
     fn speed_panel(&self) -> Element<Message> {
         let increase_speed_button: Element<_> = button("+")
             .width(40)
@@ -124,6 +129,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Перезагрузка симуляции и центрирование системы на Солнце
     fn reload_and_center_panel(&self) -> Element<Message> {
         let reload_button: Element<_> = button("Перезагрузить")
             .width(130)
@@ -144,6 +150,7 @@ impl SolarSystem {
 }
 
 impl SolarSystem {
+    /// Фоновый цвет
     fn background_color() -> Color {
         Color::from_rgba8(0, 0, 128, 0.4)
     }

@@ -2,7 +2,9 @@ use iced::Point;
 
 /// Структура круга (окружности)
 pub struct Circle {
+    /// Позиция центра
     center: Point,
+    /// Радиус
     radius: f32,
 }
 

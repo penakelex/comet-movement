@@ -57,6 +57,7 @@ impl Trajectory {
     ) {
         self.positions.push_back(point_without_quantity_units(position));
 
+        // Траектория замкнута
         if self.is_closed {
             self.positions.pop_front();
             return;
@@ -66,6 +67,7 @@ impl Trajectory {
 
         let closing = self.closing.as_mut().unwrap();
 
+        // Изменение направления
         if closing.direction == direction {
             return;
         }
@@ -79,6 +81,7 @@ impl Trajectory {
 
         closing.direction = direction;
 
+        // Каждое направление уже было
         if closing.is_left_down_used && closing.is_left_up_used
             && closing.is_right_down_used && closing.is_right_up_used
         {
@@ -87,6 +90,7 @@ impl Trajectory {
                 return;
             }
 
+            // Направление сменилось нужное количество раз, при этом в разные стороны
             self.is_closed = true;
             self.closing.take();
         }

@@ -57,6 +57,7 @@ impl CometsState {
             return None;
         }
         
+        // Получение индекса свободного цвета 
         let free_color_index = self.free_comet_color_index();
         self.taken_colors_indices.insert(free_color_index);
 
@@ -65,7 +66,7 @@ impl CometsState {
                 Comet::new(
                     &self.possible_values,
                     self.new_comet_number,
-                    self.free_comet_image_index(),
+                    self.free_comet_image_index(), // Индекс свободной картинки
                     free_color_index,
                 )
             )
@@ -83,6 +84,7 @@ impl CometsState {
             .map(|comet| comet.borrow().image().id())
             .collect::<Vec<_>>();
 
+        // Выборка случайного индекса свободного изображения
         self.possible_values.images().iter().enumerate()
             .filter_map(|(index, image)| {
                 if !taken_indices.contains(&image.id()) { Some(index as u8) } else { None }
@@ -103,10 +105,12 @@ impl CometsState {
 impl CometsState {
     /// Удаление кометы
     pub fn delete_comet(&mut self, comet_number: u8) {
+        // Если индекс существует
         if (0..self.count()).contains(&comet_number) {
             let comet_rc = self.comets.remove(comet_number as usize);
             let comet = comet_rc.borrow();
             
+            // Ищем и удаляем из занятых индекс цвета кометы
             let trajectory_color = comet.trajectory_color();
             let trajectory_color_rgb = &trajectory_color.into_rgba8()[0..3];
             

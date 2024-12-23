@@ -93,21 +93,22 @@ impl State {
             * (self.settings.scale().value() / self.config.step_formation() + 1);
 
         let scale =
+            // Приближение
             if scale_change.is_positive() {
                 match self.settings.scale().value()
                     .checked_sub(scale_change_factor * (scale_change as u32))
                 {
-                    Some(scale) if scale != 0 => scale,
+                    Some(scale) if scale != 0 => scale, // Удовлетворительное изменение масштаба
                     _ => {
                         self.view.set_incorrect_scale_color();
                         return;
                     }
                 }
-            } else {
+            } else { // Уменьшение
                 match self.settings.scale().value()
                     .checked_add(scale_change_factor * (-scale_change as u32))
                 {
-                    Some(scale) => scale,
+                    Some(scale) => scale, // Удовлетворительное изменение масштаба
                     _ => {
                         self.view.set_incorrect_scale_color();
                         return;
@@ -129,7 +130,7 @@ impl State {
     /// Изменение масштаба по вводу
     pub fn set_scale_from_input(&mut self, scale_string: String) {
         match scale_string.trim().parse::<u32>() {
-            Ok(scale) => {
+            Ok(scale) => { // Удовлетворительное изменение масштаба
                 self.settings.scale_mut().set_value(scale);
                 self.cache.clear_system();
                 self.view.set_correct_scale_color();
@@ -196,15 +197,18 @@ impl State {
         self.redraw.reload();
         self.cache.clear_all();
     }
-    
+
+    /// Нажание на меню планет
     pub fn planets_view_toggle(&mut self) {
         self.view.toggle_planets_view();
     }
-    
+
+    /// Нажатие на меню комет
     pub fn comets_view_toggle(&mut self) {
         self.view.toggle_comets_view();
     }
-    
+
+    /// Нажатие на меню спутников планеты
     pub fn satellites_view_toggle(&mut self, planet_name: String) {
         self.view.toggle_satellites_view(planet_name);
     }

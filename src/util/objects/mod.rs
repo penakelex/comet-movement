@@ -93,9 +93,13 @@ impl<T: Object + ObjectMotion> MovingObject for T {
     }
 }
 
+/// Типаж для отображения информации об объекте
 pub trait ObjectView {
+    /// Картинка
     fn image_view(&self) -> &image::Handle;
+    /// Название
     fn name_view(&self) -> String;
+    /// Скорость
     fn velocity_view(&self) -> String;
 }
 
