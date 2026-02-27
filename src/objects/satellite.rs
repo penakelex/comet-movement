@@ -21,7 +21,7 @@ use crate::util::{
 /// Спутник
 pub struct Satellite {
     /// Название
-    name: String,
+    name: Box<str>,
     /// Константы
     consts: SolarSystemObjectConsts,
     /// Движение
@@ -82,7 +82,7 @@ impl Satellite {
 impl Object for Satellite {
     #[inline(always)]
     fn name(&self) -> &str {
-        self.name.as_str()
+        self.name.as_ref()
     }
 
     #[inline(always)]

@@ -229,7 +229,7 @@ impl SpaceState {
 
     /// Получение данных для планет и их спутников
     fn get_planets_data(
-        planets_data: Vec<PlanetData>,
+        planets_data: Box<[PlanetData]>,
         trajectory_colors_values: &mut HashSet<(
             u8,
             u8,
@@ -288,7 +288,7 @@ impl SpaceState {
                 planet_consts,
                 planet_velocity,
                 planet_trajectory_color,
-                format!("{path_to_images}/{planet_image_filename}"),
+                format!("{path_to_images}/{planet_image_filename}").into_boxed_str(),
                 satellites,
             )
         })

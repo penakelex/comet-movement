@@ -4,7 +4,7 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct Data {
     pub sun: SunData,
-    pub planets: Vec<PlanetData>,
+    pub planets: Box<[PlanetData]>,
     pub comet: CometData,
 }
 
@@ -13,7 +13,7 @@ pub struct Data {
 pub struct SunData {
     pub consts: SunConsts,
     /// Название изображения Солнца
-    pub image_filename: String,
+    pub image_filename: Box<str>,
 }
 
 /// Данные констант Солнца
@@ -29,22 +29,22 @@ pub struct SunConsts {
 #[derive(Deserialize)]
 pub struct PlanetData {
     /// Название
-    pub name: String,
+    pub name: Box<str>,
     pub consts: ObjectConsts,
     /// Название изображения планеты
-    pub image_filename: String,
+    pub image_filename: Box<str>,
     /// Спутники планеты
-    pub satellites: Vec<SatelliteData>,
+    pub satellites: Box<[SatelliteData]>,
 }
 
 /// Данные спутника
 #[derive(Deserialize)]
 pub struct SatelliteData {
     /// Название
-    pub name: String,
+    pub name: Box<str>,
     pub consts: ObjectConsts,
     /// Название изображения спутника
-    pub image_filename: String,
+    pub image_filename: Box<str>,
 }
 
 /// Данные констант объекта (планеты или спутника)
@@ -68,5 +68,5 @@ pub struct CometData {
     /// Возможные радиусы (минимальный и максимальный)
     pub possible_radii: [f32; 2],
     /// Название изображений комет
-    pub images_filenames: Vec<String>,
+    pub images_filenames: Box<[Box<str>]>,
 }

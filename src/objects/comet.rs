@@ -21,7 +21,7 @@ use crate::util::{
 /// Комета
 pub struct Comet {
     /// Название
-    name: String,
+    name: Box<str>,
     /// Движение
     movement: ObjectMovement,
     /// Масса
@@ -87,7 +87,8 @@ impl Comet {
             .clone();
 
         Self {
-            name: format!("Comet {comet_number}"),
+            name: format!("Comet {comet_number}")
+                .into_boxed_str(),
             movement,
             mass,
             radius,
@@ -160,7 +161,7 @@ impl Comet {
 impl Object for Comet {
     #[inline(always)]
     fn name(&self) -> &str {
-        self.name.as_str()
+        self.name.as_ref()
     }
 
     #[inline(always)]

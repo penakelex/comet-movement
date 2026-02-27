@@ -27,7 +27,7 @@ use crate::{
 /// Планета
 pub struct Planet {
     /// Название
-    name: String,
+    name: Box<str>,
     /// Константы
     consts: SolarSystemObjectConsts,
     /// Движение
@@ -35,17 +35,17 @@ pub struct Planet {
     /// Изображение
     image: image::Handle,
     /// Спутники
-    satellites: Vec<Rc<RefCell<Satellite>>>,
+    satellites: Box<[Rc<RefCell<Satellite>>]>,
 }
 
 impl Planet {
     pub fn new(
-        planet_name: String,
+        planet_name: Box<str>,
         initial_position: f32,
         planet_consts: ObjectConsts,
         velocity: Quantity<KilometersPerSecond>,
         trajectory_color: Color,
-        path_to_image: String,
+        path_to_image: Box<str>,
         satellites: Vec<Satellite>,
     ) -> Self {
         // Запись констант
@@ -74,7 +74,9 @@ impl Planet {
             name: planet_name,
             consts,
             movement,
-            image: image::Handle::from_path(path_to_image),
+            image: image::Handle::from_path(
+                path_to_image.as_ref(),
+            ),
             satellites,
         }
     }
@@ -97,21 +99,21 @@ impl Planet {
 
     #[inline(always)]
     pub fn satellites(&self) -> &[Rc<RefCell<Satellite>>] {
-        self.satellites.as_slice()
+        self.satellites.as_ref()
     }
 
     #[inline(always)]
     pub fn satellites_mut(
         &mut self,
     ) -> &mut [Rc<RefCell<Satellite>>] {
-        self.satellites.as_mut_slice()
+        self.satellites.as_mut()
     }
 }
 
 impl Object for Planet {
     #[inline(always)]
     fn name(&self) -> &str {
-        self.name.as_str()
+        self.name.as_ref()
     }
 
     #[inline(always)]
