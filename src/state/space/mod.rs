@@ -1,8 +1,10 @@
-use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
-use std::fs::File;
-use std::io::BufReader;
-use std::rc::{Rc, Weak};
+use std::{
+    cell::RefCell,
+    collections::{HashMap, HashSet},
+    fs::File,
+    io::BufReader,
+    rc::{Rc, Weak},
+};
 
 use gset::Getset;
 use iced::Color;
@@ -10,30 +12,39 @@ use rand::RngExt;
 use serde_json::from_reader;
 use tap::{Tap, TapOptional};
 
-use crate::objects::comet::{Comet, CometPossibleValues};
-use crate::objects::planet::Planet;
-use crate::objects::satellite::Satellite;
-use crate::objects::stars::Star;
-use crate::objects::sun::Sun;
-use crate::state::space::comets::CometsState;
-use crate::util::data::solar_system_data::{
-    Data, PlanetData,
+use crate::{
+    objects::{
+        comet::{Comet, CometPossibleValues},
+        planet::Planet,
+        satellite::Satellite,
+        stars::Star,
+        sun::Sun,
+    },
+    state::space::comets::CometsState,
+    util::{
+        data::solar_system_data::{Data, PlanetData},
+        geometry::circle::{
+            Circle, is_circles_have_common_points,
+        },
+        objects::{
+            MovingObject, Object, ObjectMotion,
+            values::FormValues,
+        },
+        physics::{
+            formulas::{
+                orbital_velocity, vector_of_velocity_change,
+            },
+            quantities::{
+                Quantity,
+                quantity_units::{
+                    Kilograms, Kilometers,
+                    KilometersPerSecond, Seconds,
+                },
+            },
+            vector::VectorValue,
+        },
+    },
 };
-use crate::util::geometry::circle::{
-    Circle, is_circles_have_common_points,
-};
-use crate::util::objects::values::FormValues;
-use crate::util::objects::{
-    MovingObject, Object, ObjectMotion,
-};
-use crate::util::physics::formulas::{
-    orbital_velocity, vector_of_velocity_change,
-};
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond, Seconds,
-};
-use crate::util::physics::vector::VectorValue;
 
 pub mod comets;
 

@@ -1,7 +1,8 @@
 use std::fmt::Display;
 
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::Seconds;
+use crate::util::physics::quantities::{
+    Quantity, quantity_units::Seconds,
+};
 
 /// Скорость симуляции
 pub enum Speed {

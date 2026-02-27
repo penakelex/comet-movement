@@ -3,12 +3,12 @@ use std::ops::{Add, Div, Mul};
 use iced::Vector;
 use num_traits::{Float, NumCast, ToPrimitive};
 
-use crate::util::physics::quantities::quantity_units::{
-    InterimQuantityUnit, KilometersPerSecond,
-    MetersPerSecond,
-};
-use crate::util::physics::quantities::{
-    NewQuantity, Quantity, QuantityUnit,
+use crate::util::physics::{
+    quantities::quantity_units::{
+        InterimQuantityUnit, KilometersPerSecond,
+        MetersPerSecond,
+    },
+    quantities::{NewQuantity, Quantity, QuantityUnit},
 };
 
 /// Физический вектор

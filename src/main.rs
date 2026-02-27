@@ -1,9 +1,9 @@
 use std::time::Duration;
 
-use iced::time::every;
-use iced::widget::{canvas, stack};
 use iced::{
     Element, Fill, Point, Subscription, Theme, application,
+    time::every,
+    widget::{canvas, stack},
 };
 
 use crate::state::State;

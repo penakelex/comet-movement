@@ -1,13 +1,19 @@
 use gset::Getset;
 use iced::{Color, Point, Vector};
 
-use crate::util::objects::movement::trajectory::Trajectory;
-use crate::util::physics::formulas::end_position_after_moving;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilometers, KilometersPerSecond, Seconds,
+use crate::util::{
+    objects::movement::trajectory::Trajectory,
+    physics::{
+        formulas::end_position_after_moving,
+        quantities::{
+            Quantity,
+            quantity_units::{
+                Kilometers, KilometersPerSecond, Seconds,
+            },
+        },
+        vector::VectorValue,
+    },
 };
-use crate::util::physics::vector::VectorValue;
 
 pub mod trajectory;
 

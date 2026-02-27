@@ -1,12 +1,17 @@
-use crate::util::data::solar_system_data::SunData;
-use crate::util::objects::consts::SolarSystemObjectConsts;
-use crate::util::objects::{Object, ObjectView};
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond,
+use iced::{Point, widget::image};
+
+use crate::util::{
+    data::solar_system_data::SunData,
+    objects::{
+        Object, ObjectView, consts::SolarSystemObjectConsts,
+    },
+    physics::quantities::{
+        Quantity,
+        quantity_units::{
+            Kilograms, Kilometers, KilometersPerSecond,
+        },
+    },
 };
-use iced::Point;
-use iced::widget::image;
 
 pub struct Sun {
     consts: SolarSystemObjectConsts,

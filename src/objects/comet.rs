@@ -1,16 +1,22 @@
-use crate::util::data::solar_system_data::CometData;
-use crate::util::objects::movement::ObjectMovement;
-use crate::util::objects::{Object, ObjectMotion};
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond,
-};
-use crate::util::physics::vector::VectorValue;
 use gset::Getset;
-use iced::widget::image;
-use iced::{Color, Point, Vector};
-use rand::RngExt;
-use rand::rngs::ThreadRng;
+use iced::{Color, Point, Vector, widget::image};
+use rand::{RngExt, rngs::ThreadRng};
+
+use crate::util::{
+    data::solar_system_data::CometData,
+    objects::{
+        Object, ObjectMotion, movement::ObjectMovement,
+    },
+    physics::{
+        quantities::{
+            Quantity,
+            quantity_units::{
+                Kilograms, Kilometers, KilometersPerSecond,
+            },
+        },
+        vector::VectorValue,
+    },
+};
 
 /// Комета
 pub struct Comet {

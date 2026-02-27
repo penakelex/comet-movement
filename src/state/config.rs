@@ -1,7 +1,11 @@
-use crate::util::data::config_data::ConfigData;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::Seconds;
 use gset::Getset;
+
+use crate::util::{
+    data::config_data::ConfigData,
+    physics::quantities::{
+        Quantity, quantity_units::Seconds,
+    },
+};
 
 /// Данные из файла конфигурации
 #[derive(Getset)]

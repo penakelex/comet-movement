@@ -1,8 +1,10 @@
-use iced::alignment::{Horizontal, Vertical};
-use iced::widget::{
-    button, column, container, row, text, text_input,
+use iced::{
+    Background, Border, Color, Element, Fill,
+    alignment::{Horizontal, Vertical},
+    widget::{
+        button, column, container, row, text, text_input,
+    },
 };
-use iced::{Background, Border, Color, Element, Fill};
 
 use crate::{Message, SolarSystem};
 

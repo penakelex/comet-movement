@@ -1,23 +1,28 @@
-use std::cell::{Ref, RefCell};
-use std::rc::Weak;
-
-use crate::util::geometry::point::translate_point;
-use crate::util::objects::{MovingObject, Object};
-use iced::mouse::{Button, Cursor, ScrollDelta};
-use iced::widget::canvas::{
-    self, Action, Event, Frame, Geometry, Path, Stroke,
-    Style,
+use std::{
+    cell::{Ref, RefCell},
+    rc::Weak,
 };
+
 use iced::{
     Color, Point, Rectangle, Renderer, Size, Theme, Vector,
     mouse,
+    mouse::{Button, Cursor, ScrollDelta},
+    widget::canvas::{
+        self, Action, Event, Frame, Geometry, Path, Stroke,
+        Style,
+    },
 };
 use tap::TapOptional;
 
-use crate::Message;
-use crate::objects::stars::Star;
-use crate::state::State;
-use crate::state::system_position::CursorPinch;
+use crate::{
+    Message,
+    objects::stars::Star,
+    state::{State, system_position::CursorPinch},
+    util::{
+        geometry::point::translate_point,
+        objects::{MovingObject, Object},
+    },
+};
 
 /// Перенос центра координатной системы на позицию Солнца
 fn translate_frame_to_new_center(

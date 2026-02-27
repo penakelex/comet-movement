@@ -1,7 +1,6 @@
 use gset::Getset;
 
-use crate::state::settings::scale::Scale;
-use crate::state::settings::speed::Speed;
+use crate::state::settings::{scale::Scale, speed::Speed};
 
 pub mod scale;
 pub mod speed;

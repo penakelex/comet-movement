@@ -1,19 +1,28 @@
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
-use crate::util::data::solar_system_data::ObjectConsts;
-use crate::util::objects::consts::SolarSystemObjectConsts;
-use crate::util::objects::movement::ObjectMovement;
-use crate::util::objects::{Object, ObjectMotion};
-use crate::util::physics::formulas::orbital_velocity;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond,
+use iced::{Color, Point, widget::image};
+
+use crate::{
+    objects::satellite::Satellite,
+    util::{
+        data::solar_system_data::ObjectConsts,
+        objects::{
+            Object, ObjectMotion,
+            consts::SolarSystemObjectConsts,
+            movement::ObjectMovement,
+        },
+        physics::{
+            formulas::orbital_velocity,
+            quantities::{
+                Quantity,
+                quantity_units::{
+                    Kilograms, Kilometers,
+                    KilometersPerSecond,
+                },
+            },
+        },
+    },
 };
-use iced::widget::image;
-use iced::{Color, Point};
-
-use crate::objects::satellite::Satellite;
 
 /// Планета
 pub struct Planet {

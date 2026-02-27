@@ -1,18 +1,19 @@
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
-use iced::alignment::Vertical;
-use iced::widget::container::Style;
-use iced::widget::{
-    Column, button, column, container, image, row,
-    scrollable, text,
+use iced::{
+    Background, Border, Color, Element, Fill,
+    alignment::Vertical,
+    widget::{
+        Column, button, column, container,
+        container::Style, image, row, scrollable, text,
+    },
 };
-use iced::{Background, Border, Color, Element, Fill};
 
-use crate::objects::comet::Comet;
-use crate::objects::planet::Planet;
-use crate::util::objects::{Object, ObjectView};
-use crate::{Message, SolarSystem};
+use crate::{
+    Message, SolarSystem,
+    objects::{comet::Comet, planet::Planet},
+    util::objects::{Object, ObjectView},
+};
 
 impl SolarSystem {
     /// Панель с информацией объектами и управлением ими

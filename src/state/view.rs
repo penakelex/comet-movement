@@ -1,12 +1,11 @@
-use gset::Getset;
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
+use gset::Getset;
 use iced::Color;
 
-use crate::objects::planet::Planet;
-use crate::util::objects::Object;
+use crate::{
+    objects::planet::Planet, util::objects::Object,
+};
 
 /// Состояние UI
 #[derive(Getset)]

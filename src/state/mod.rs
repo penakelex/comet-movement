@@ -1,15 +1,19 @@
 use iced::Point;
 
-use crate::state::caches::StateCache;
-use crate::state::config::Config;
-use crate::state::redraw::RedrawState;
-use crate::state::settings::Settings;
-use crate::state::space::SpaceState;
-use crate::state::system_position::{
-    CursorPinch, SolarSystemPositionState,
+use crate::{
+    state::{
+        caches::StateCache,
+        config::Config,
+        redraw::RedrawState,
+        settings::Settings,
+        space::SpaceState,
+        system_position::{
+            CursorPinch, SolarSystemPositionState,
+        },
+        view::ViewState,
+    },
+    util::time::Time,
 };
-use crate::state::view::ViewState;
-use crate::util::time::Time;
 
 mod caches;
 mod canvas;

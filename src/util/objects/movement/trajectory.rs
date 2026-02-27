@@ -4,9 +4,9 @@ use num_traits::Float;
 use std::collections::VecDeque;
 use tap::Tap;
 
-use crate::util::physics::quantities::quantity_units::Kilometers;
 use crate::util::physics::quantities::{
     Quantity, point_without_quantity_units,
+    quantity_units::Kilometers,
 };
 
 /// Траектория двигающегося объекта

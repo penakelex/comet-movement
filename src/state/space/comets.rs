@@ -1,12 +1,12 @@
-use std::cell::RefCell;
-use std::collections::HashSet;
-use std::rc::Rc;
+use std::{cell::RefCell, collections::HashSet, rc::Rc};
 
-use crate::util::objects::{MovingObject, Object};
 use gset::Getset;
 use rand::prelude::IteratorRandom;
 
-use crate::objects::comet::{Comet, CometPossibleValues};
+use crate::{
+    objects::comet::{Comet, CometPossibleValues},
+    util::objects::{MovingObject, Object},
+};
 
 /// Состояние комет
 #[derive(Getset)]

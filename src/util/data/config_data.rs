@@ -1,6 +1,4 @@
-use std::env::var;
-use std::fmt::Debug;
-use std::str::FromStr;
+use std::{env::var, fmt::Debug, str::FromStr};
 
 /// Стуктура для получения данных из конфига
 pub struct ConfigData;

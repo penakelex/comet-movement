@@ -1,17 +1,23 @@
-use iced::widget::image;
-use iced::{Color, Point};
+use iced::{Color, Point, widget::image};
 use num_traits::ToPrimitive;
 
-use crate::util::geometry::point::scale_point;
-use crate::util::objects::movement::ObjectMovement;
-use crate::util::objects::values::{
-    FormValues, GravitationalForceValues,
+use crate::util::{
+    geometry::point::scale_point,
+    objects::{
+        movement::ObjectMovement,
+        values::{FormValues, GravitationalForceValues},
+    },
+    physics::{
+        quantities::{
+            Quantity,
+            quantity_units::{
+                Kilograms, Kilometers, KilometersPerSecond,
+                Seconds,
+            },
+        },
+        vector::VectorValue,
+    },
 };
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond, Seconds,
-};
-use crate::util::physics::vector::VectorValue;
 
 pub mod consts;
 pub mod movement;

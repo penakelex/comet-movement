@@ -1,11 +1,13 @@
 use gset::Getset;
 use iced::Point;
 
-use crate::util::geometry::circle::Circle;
-use crate::util::objects::Object;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers,
+use crate::util::{
+    geometry::circle::Circle,
+    objects::Object,
+    physics::quantities::{
+        Quantity,
+        quantity_units::{Kilograms, Kilometers},
+    },
 };
 
 /// Типаж значений объекта для вычисления гравитационной силы

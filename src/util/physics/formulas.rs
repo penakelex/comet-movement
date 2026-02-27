@@ -1,13 +1,21 @@
 use iced::{Point, Vector};
 
-use crate::util::objects::values::ObjectGravitationalForceValues;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    KilogramMeterPerSecond, Kilograms, Kilometers,
-    KilometersPerSecond, Meters, MetersPerSecond,
-    NewtonMeterSquaredPerKilogramSquared, Newtons, Seconds,
+use crate::util::{
+    objects::values::ObjectGravitationalForceValues,
+    physics::{
+        quantities::{
+            Quantity,
+            quantity_units::{
+                KilogramMeterPerSecond, Kilograms,
+                Kilometers, KilometersPerSecond, Meters,
+                MetersPerSecond,
+                NewtonMeterSquaredPerKilogramSquared,
+                Newtons, Seconds,
+            },
+        },
+        vector::VectorValue,
+    },
 };
-use crate::util::physics::vector::VectorValue;
 
 /// F = 0 Н в векторной форме
 const ZERO_FORCE_VECTOR: VectorValue<Newtons> =

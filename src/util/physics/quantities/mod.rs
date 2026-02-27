@@ -1,5 +1,7 @@
-use std::fmt::{Display, Formatter};
-use std::ops::{Add, Div, Mul, Sub};
+use std::{
+    fmt::{Display, Formatter},
+    ops::{Add, Div, Mul, Sub},
+};
 
 use iced::Point;
 use num_traits::{Float, NumCast, ToPrimitive};

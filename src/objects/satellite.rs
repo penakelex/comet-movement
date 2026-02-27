@@ -1,14 +1,22 @@
-use crate::util::data::solar_system_data::SatelliteData;
-use crate::util::objects::consts::SolarSystemObjectConsts;
-use crate::util::objects::movement::ObjectMovement;
-use crate::util::objects::{Object, ObjectMotion};
-use crate::util::physics::formulas::orbital_velocity;
-use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{
-    Kilograms, Kilometers, KilometersPerSecond,
+use iced::{Color, Point, widget::image};
+
+use crate::util::{
+    data::solar_system_data::SatelliteData,
+    objects::{
+        Object, ObjectMotion,
+        consts::SolarSystemObjectConsts,
+        movement::ObjectMovement,
+    },
+    physics::{
+        formulas::orbital_velocity,
+        quantities::{
+            Quantity,
+            quantity_units::{
+                Kilograms, Kilometers, KilometersPerSecond,
+            },
+        },
+    },
 };
-use iced::widget::image;
-use iced::{Color, Point};
 
 /// Спутник
 pub struct Satellite {
