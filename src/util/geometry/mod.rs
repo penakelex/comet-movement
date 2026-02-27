@@ -1,3 +1,3 @@
-pub mod vector;
-pub mod point;
 pub mod circle;
+pub mod point;
+pub mod vector;

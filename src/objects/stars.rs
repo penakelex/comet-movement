@@ -21,7 +21,7 @@ impl Star {
             rng.random_range(-1.0..=1.0),
             rng.random_range(-1.0..=1.0),
         );
-        
+
         Star {
             relative_point,
             size: rng.random_range(0.5..1.0),

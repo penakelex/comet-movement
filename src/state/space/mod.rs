@@ -16,13 +16,23 @@ use crate::objects::satellite::Satellite;
 use crate::objects::stars::Star;
 use crate::objects::sun::Sun;
 use crate::state::space::comets::CometsState;
-use crate::util::data::solar_system_data::{Data, PlanetData};
-use crate::util::geometry::circle::{Circle, is_circles_have_common_points};
-use crate::util::objects::{MovingObject, Object, ObjectMotion};
+use crate::util::data::solar_system_data::{
+    Data, PlanetData,
+};
+use crate::util::geometry::circle::{
+    Circle, is_circles_have_common_points,
+};
 use crate::util::objects::values::FormValues;
-use crate::util::physics::formulas::{orbital_velocity, vector_of_velocity_change};
+use crate::util::objects::{
+    MovingObject, Object, ObjectMotion,
+};
+use crate::util::physics::formulas::{
+    orbital_velocity, vector_of_velocity_change,
+};
 use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond, Seconds};
+use crate::util::physics::quantities::quantity_units::{
+    Kilograms, Kilometers, KilometersPerSecond, Seconds,
+};
 use crate::util::physics::vector::VectorValue;
 
 pub mod comets;
@@ -52,40 +62,47 @@ impl SpaceState {
         background_stars_count: u16,
         maximum_number_of_comets: u8,
     ) -> Self {
-        let (
-            sun,
-            planets,
-            comet_possible_values
-        ) = Self::get_solar_system_data(
-            path_to_solar_system_values,
-            path_to_images,
-            maximum_number_of_comets,
-        );
+        let (sun, planets, comet_possible_values) =
+            Self::get_solar_system_data(
+                path_to_solar_system_values,
+                path_to_images,
+                maximum_number_of_comets,
+            );
 
         let sun = Rc::new(RefCell::new(sun));
 
-        let planets = planets.into_iter()
+        let planets = planets
+            .into_iter()
             .map(|planet| Rc::new(RefCell::new(planet)))
             .collect::<Vec<_>>();
 
-        let all_objects = Self::get_all_objects(&sun, planets.as_slice());
+        let all_objects =
+            Self::get_all_objects(&sun, planets.as_slice());
 
-        let moving_objects = Self::get_moving_objects(planets.as_slice());
+        let moving_objects =
+            Self::get_moving_objects(planets.as_slice());
 
         Self {
-            stars: Self::generate_stars(background_stars_count),
+            stars: Self::generate_stars(
+                background_stars_count,
+            ),
             planets,
             sun,
             all_objects,
             moving_objects,
-            comets: CometsState::new(comet_possible_values, maximum_number_of_comets),
+            comets: CometsState::new(
+                comet_possible_values,
+                maximum_number_of_comets,
+            ),
         }
     }
 
     /// Генерация фоновых звёзд
     fn generate_stars(stars_count: u16) -> Vec<Star> {
         let mut rng = rand::rng();
-        (0..stars_count).map(|_| Star::generate(&mut rng)).collect()
+        (0..stars_count)
+            .map(|_| Star::generate(&mut rng))
+            .collect()
     }
 
     /// Составление массива всех объектов
@@ -93,38 +110,68 @@ impl SpaceState {
         sun: &Rc<RefCell<Sun>>,
         planets: &[Rc<RefCell<Planet>>],
     ) -> Vec<Weak<RefCell<dyn Object>>> {
-        Vec::<Weak<RefCell<dyn Object>>>::new().tap_mut(|all_objects| {
-            let sun: Rc<RefCell<dyn Object>> = sun.clone();
-            all_objects.push(Rc::downgrade(&sun));
+        Vec::<Weak<RefCell<dyn Object>>>::new().tap_mut(
+            |all_objects| {
+                let sun: Rc<RefCell<dyn Object>> =
+                    sun.clone();
+                all_objects.push(Rc::downgrade(&sun));
 
-            planets.iter().for_each(|planet| {
-                let planet_as_object: Rc<RefCell<dyn Object>> = planet.clone();
-                all_objects.push(Rc::downgrade(&planet_as_object));
+                planets.iter().for_each(|planet| {
+                    let planet_as_object: Rc<
+                        RefCell<dyn Object>,
+                    > = planet.clone();
+                    all_objects.push(Rc::downgrade(
+                        &planet_as_object,
+                    ));
 
-                planet.borrow().satellites().iter().for_each(|satellite| {
-                    let satellite: Rc<RefCell<dyn Object>> = satellite.clone();
-                    all_objects.push(Rc::downgrade(&satellite));
+                    planet
+                        .borrow()
+                        .satellites()
+                        .iter()
+                        .for_each(|satellite| {
+                            let satellite: Rc<
+                                RefCell<dyn Object>,
+                            > = satellite.clone();
+                            all_objects.push(
+                                Rc::downgrade(&satellite),
+                            );
+                        });
                 });
-            });
-        })
+            },
+        )
     }
 
     /// Составление всех двигающихся объектов
-    fn get_moving_objects(planets: &[Rc<RefCell<Planet>>]) -> Vec<Weak<RefCell<dyn MovingObject>>> {
-        Vec::<Weak<RefCell<dyn MovingObject>>>::new().tap_mut(|moving_objects| {
-            planets.iter().for_each(|planet| {
-                let planet_as_object: Rc<RefCell<dyn MovingObject>> = planet.clone();
-                moving_objects.push(Rc::downgrade(&planet_as_object));
+    fn get_moving_objects(
+        planets: &[Rc<RefCell<Planet>>],
+    ) -> Vec<Weak<RefCell<dyn MovingObject>>> {
+        Vec::<Weak<RefCell<dyn MovingObject>>>::new()
+            .tap_mut(|moving_objects| {
+                planets.iter().for_each(|planet| {
+                    let planet_as_object: Rc<
+                        RefCell<dyn MovingObject>,
+                    > = planet.clone();
+                    moving_objects.push(Rc::downgrade(
+                        &planet_as_object,
+                    ));
 
-                planet.borrow().satellites().iter().for_each(|satellite| {
-                    let satellite: Rc<RefCell<dyn MovingObject>> = satellite.clone();
-                    moving_objects.push(Rc::downgrade(&satellite));
+                    planet
+                        .borrow()
+                        .satellites()
+                        .iter()
+                        .for_each(|satellite| {
+                            let satellite: Rc<
+                                RefCell<dyn MovingObject>,
+                            > = satellite.clone();
+                            moving_objects.push(
+                                Rc::downgrade(&satellite),
+                            );
+                        });
                 });
-            });
-        })
+            })
     }
 
-    /// Получение данных для объектов Солнечной системы 
+    /// Получение данных для объектов Солнечной системы
     fn get_solar_system_data(
         path_to_values: &str,
         path_to_images: &str,
@@ -136,8 +183,9 @@ impl SpaceState {
         let Data {
             sun: sun_data,
             planets: planets_data,
-            comet: comet_data
-        } = from_reader(BufReader::new(file)).expect("Can not read data");
+            comet: comet_data,
+        } = from_reader(BufReader::new(file))
+            .expect("Can not read data");
 
         let sun = Sun::new(sun_data, path_to_images);
 
@@ -152,11 +200,18 @@ impl SpaceState {
         );
 
         let comets_colors = (0..maximum_number_of_comets)
-            .map(|_| Self::generate_object_trajectory_color(&mut trajectory_colors_values))
+            .map(|_| {
+                Self::generate_object_trajectory_color(
+                    &mut trajectory_colors_values,
+                )
+            })
             .collect::<Vec<_>>();
 
-        let comet_values =
-            CometPossibleValues::new(comet_data, path_to_images, comets_colors);
+        let comet_values = CometPossibleValues::new(
+            comet_data,
+            path_to_images,
+            comets_colors,
+        );
 
         (sun, planets, comet_values)
     }
@@ -164,7 +219,11 @@ impl SpaceState {
     /// Получение данных для планет и их спутников
     fn get_planets_data(
         planets_data: Vec<PlanetData>,
-        trajectory_colors_values: &mut HashSet<(u8, u8, u8)>,
+        trajectory_colors_values: &mut HashSet<(
+            u8,
+            u8,
+            u8,
+        )>,
         sun_mass: Quantity<Kilograms>,
         sun_radius: f32,
         path_to_images: &str,
@@ -227,7 +286,11 @@ impl SpaceState {
 
     /// Генерация неповторяющегося цвета траектории объекта
     fn generate_object_trajectory_color(
-        trajectory_colors_values: &mut HashSet<(u8, u8, u8)>
+        trajectory_colors_values: &mut HashSet<(
+            u8,
+            u8,
+            u8,
+        )>,
     ) -> Color {
         let mut rng = rand::rng();
         loop {
@@ -238,9 +301,17 @@ impl SpaceState {
                 rng.random_range(0..255_u8),
             );
 
-            if !trajectory_colors_values.contains(&color_values) {
-                trajectory_colors_values.insert(color_values);
-                return Color::from_rgba8(color_values.0, color_values.1, color_values.2, 0.8);
+            if !trajectory_colors_values
+                .contains(&color_values)
+            {
+                trajectory_colors_values
+                    .insert(color_values);
+                return Color::from_rgba8(
+                    color_values.0,
+                    color_values.1,
+                    color_values.2,
+                    0.8,
+                );
             }
         }
     }
@@ -258,53 +329,80 @@ impl SpaceState {
     pub fn comets(&self) -> &[Rc<RefCell<Comet>>] {
         self.comets.as_slice()
     }
-    
+
     pub fn comets_count(&self) -> u8 {
         self.comets.count()
     }
 
-    pub fn all_objects(&self) -> &[Weak<RefCell<dyn Object>>] {
+    pub fn all_objects(
+        &self,
+    ) -> &[Weak<RefCell<dyn Object>>] {
         self.all_objects.as_slice()
     }
 
-    pub fn moving_objects(&self) -> &[Weak<RefCell<dyn MovingObject>>] {
+    pub fn moving_objects(
+        &self,
+    ) -> &[Weak<RefCell<dyn MovingObject>>] {
         self.moving_objects.as_slice()
     }
 }
 
 impl SpaceState {
     /// Движение объектов
-    pub fn move_objects(&mut self, seconds_per_tick: Quantity<Seconds>) {
+    pub fn move_objects(
+        &mut self,
+        seconds_per_tick: Quantity<Seconds>,
+    ) {
         // Получение позиции и массы объектов
-        let objects_gravitational_values = self.all_objects.iter()
-            .filter_map(|object| object.upgrade()
-                .map(|object_rc| object_rc.borrow().gravitational_force_values())
-            )
+        let objects_gravitational_values = self
+            .all_objects
+            .iter()
+            .filter_map(|object| {
+                object.upgrade().map(|object_rc| {
+                    object_rc
+                        .borrow()
+                        .gravitational_force_values()
+                })
+            })
             .collect::<Vec<_>>();
 
         // Получение изменения скорости движущихся объектов
-        let velocities_changes = self.moving_objects.iter()
-            .filter_map(|object| object.upgrade()
-                .map(|object_rc| {
+        let velocities_changes = self
+            .moving_objects
+            .iter()
+            .filter_map(|object| {
+                object.upgrade().map(|object_rc| {
                     let object = object_rc.borrow();
 
-                    let comet_velocity_change = vector_of_velocity_change(
-                        object.gravitational_force_values(),
-                        objects_gravitational_values.as_slice(),
-                        seconds_per_tick,
-                    );
+                    let comet_velocity_change =
+                        vector_of_velocity_change(
+                            object
+                                .gravitational_force_values(
+                                ),
+                            objects_gravitational_values
+                                .as_slice(),
+                            seconds_per_tick,
+                        );
 
-                    (object.name().to_string(), comet_velocity_change)
+                    (
+                        object.name().to_string(),
+                        comet_velocity_change,
+                    )
                 })
-            )
-            .collect::<HashMap<String, VectorValue<KilometersPerSecond>>>();
+            })
+            .collect::<HashMap<
+                String,
+                VectorValue<KilometersPerSecond>,
+            >>();
 
         // Изменение скорости
         self.moving_objects.iter().for_each(|object| {
             object.upgrade().tap_some(|object_rc| {
-                let object_name = object_rc.borrow().name().to_string();
+                let object_name =
+                    object_rc.borrow().name().to_string();
                 object_rc.borrow_mut().update_position(
-                    velocities_changes[&object_name].clone(),
+                    velocities_changes[&object_name]
+                        .clone(),
                     seconds_per_tick,
                 );
             });
@@ -316,43 +414,66 @@ impl SpaceState {
     /// Удаление комет, столкнувшихся в другой объект
     pub fn remove_crashed_comets(&mut self) {
         // Получение объектов как кругов
-        let circles = self.all_objects.iter()
-            .filter_map(|object| object.upgrade()
-                .map(|object_rc| {
-                    (object.clone(), Circle::from(object_rc.borrow().form_values()))
+        let circles = self
+            .all_objects
+            .iter()
+            .filter_map(|object| {
+                object.upgrade().map(|object_rc| {
+                    (
+                        object.clone(),
+                        Circle::from(
+                            object_rc
+                                .borrow()
+                                .form_values(),
+                        ),
+                    )
                 })
-            )
+            })
             .collect::<Vec<_>>();
 
         let mut crashed_indices = Vec::new();
 
         // Поиск комет, которые столкнулись с другими объектами
-        self.comets.as_slice().iter().enumerate().for_each(|(index, comet)| {
-            let comet_as_object: Rc<RefCell<dyn Object>> = comet.clone();
-            let comet_weak_reference = Rc::downgrade(&comet_as_object);
+        self.comets.as_slice().iter().enumerate().for_each(
+            |(index, comet)| {
+                let comet_as_object: Rc<
+                    RefCell<dyn Object>,
+                > = comet.clone();
+                let comet_weak_reference =
+                    Rc::downgrade(&comet_as_object);
 
-            let comet_circle = Circle::from(comet.borrow().form_values());
+                let comet_circle = Circle::from(
+                    comet.borrow().form_values(),
+                );
 
-            for (object, object_circle) in circles.iter() {
-                if !object.ptr_eq(&comet_weak_reference)
-                    && is_circles_have_common_points(&comet_circle, object_circle)
+                for (object, object_circle) in
+                    circles.iter()
                 {
-                    crashed_indices.push(index as u8);
-                    break;
+                    if !object.ptr_eq(&comet_weak_reference)
+                        && is_circles_have_common_points(
+                            &comet_circle,
+                            object_circle,
+                        )
+                    {
+                        crashed_indices.push(index as u8);
+                        break;
+                    }
                 }
-            }
-        });
+            },
+        );
 
         // Удаление столкнувшихся комет
-        crashed_indices.into_iter().rev()
-            .for_each(|index| self.comets.delete_comet(index));
+        crashed_indices.into_iter().rev().for_each(
+            |index| self.comets.delete_comet(index),
+        );
     }
 }
 
 impl SpaceState {
     /// Создание и добавление новой кометы
     pub fn add_new_comet(&mut self) {
-        if let Some(new_comet) = self.comets.add_new_comet() {
+        if let Some(new_comet) = self.comets.add_new_comet()
+        {
             let new_comet = Rc::downgrade(&new_comet);
             self.all_objects.push(new_comet.clone());
             self.moving_objects.push(new_comet);
@@ -376,7 +497,10 @@ impl SpaceState {
 
     // Очищаем удалённые объекты
     fn filter_from_cleared_objects(&mut self) {
-        let cleared_objects = self.all_objects.iter().enumerate()
+        let cleared_objects = self
+            .all_objects
+            .iter()
+            .enumerate()
             .filter_map(|(index, object)| {
                 match object.upgrade() {
                     None => Some(index),
@@ -393,7 +517,10 @@ impl SpaceState {
 
     // Очищаем удалённые движущиеся объекты
     fn filter_from_cleared_moving_objects(&mut self) {
-        let cleared_moving_objects = self.moving_objects.iter().enumerate()
+        let cleared_moving_objects = self
+            .moving_objects
+            .iter()
+            .enumerate()
             .filter_map(|(index, object)| {
                 match object.upgrade() {
                     None => Some(index as u8),
@@ -403,17 +530,19 @@ impl SpaceState {
             .rev()
             .collect::<Vec<_>>();
 
-
-        cleared_moving_objects.into_iter().for_each(|index| {
-            self.moving_objects.remove(index as usize);
-        });
+        cleared_moving_objects.into_iter().for_each(
+            |index| {
+                self.moving_objects.remove(index as usize);
+            },
+        );
     }
 
     // Обновляем данные планет и спутников
     fn reload_planets_and_satellites(&mut self) {
         let sun_mass = self.sun.borrow().mass();
         self.planets.iter_mut().for_each(|planet| {
-            let velocity = planet.borrow().movement().velocity().value;
+            let velocity =
+                planet.borrow().movement().velocity().value;
             let mass = planet.borrow().mass().value();
             let orbit = planet.borrow().initial_orbit();
             let radius = planet.borrow().radius().value();
@@ -422,9 +551,13 @@ impl SpaceState {
 
             planet.reload(sun_mass);
 
-            planet.satellites_mut().iter_mut().for_each(move |satellite| {
-                satellite.borrow_mut().reload(velocity, mass, orbit, radius);
-            });
+            planet.satellites_mut().iter_mut().for_each(
+                move |satellite| {
+                    satellite.borrow_mut().reload(
+                        velocity, mass, orbit, radius,
+                    );
+                },
+            );
         });
     }
 }

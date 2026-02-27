@@ -1,7 +1,7 @@
+use gset::Getset;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use gset::Getset;
 
 use iced::Color;
 
@@ -26,12 +26,16 @@ pub struct ViewState {
 
 impl ViewState {
     pub fn new(planets: &[Rc<RefCell<Planet>>]) -> Self {
-        let planets_satellites_view = planets.iter()
-            .map(|planet| (planet.borrow().name().to_string(), false))
+        let planets_satellites_view = planets
+            .iter()
+            .map(|planet| {
+                (planet.borrow().name().to_string(), false)
+            })
             .collect::<HashMap<String, bool>>();
 
         Self {
-            satellites_views_opened: planets_satellites_view,
+            satellites_views_opened:
+                planets_satellites_view,
             planets_views_opened: true,
             comets_views_opened: true,
             scale_input_color: Color::WHITE,
@@ -41,25 +45,34 @@ impl ViewState {
 
 impl ViewState {
     #[inline(always)]
-    pub fn is_satellites_opened(&self, planet_name: String) -> bool {
+    pub fn is_satellites_opened(
+        &self,
+        planet_name: String,
+    ) -> bool {
         self.satellites_views_opened[&planet_name]
     }
 
-    pub fn toggle_satellites_view(&mut self, planet_name: String) {
-        self.satellites_views_opened.entry(planet_name)
+    pub fn toggle_satellites_view(
+        &mut self,
+        planet_name: String,
+    ) {
+        self.satellites_views_opened
+            .entry(planet_name)
             .and_modify(|opened| *opened = !*opened);
     }
 }
 
 impl ViewState {
     pub fn toggle_planets_view(&mut self) {
-        self.planets_views_opened = !self.planets_views_opened;
+        self.planets_views_opened =
+            !self.planets_views_opened;
     }
 }
 
 impl ViewState {
     pub fn toggle_comets_view(&mut self) {
-        self.comets_views_opened = !self.comets_views_opened;
+        self.comets_views_opened =
+            !self.comets_views_opened;
     }
 }
 

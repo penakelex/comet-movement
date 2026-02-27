@@ -1,6 +1,8 @@
-use gset::Getset;
 use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers};
+use crate::util::physics::quantities::quantity_units::{
+    Kilograms, Kilometers,
+};
+use gset::Getset;
 
 /// Константы объекта Солнечной системы
 #[derive(Getset)]
@@ -18,10 +20,16 @@ pub struct SolarSystemObjectConsts {
 
 impl SolarSystemObjectConsts {
     #[inline(always)]
-    pub fn new(mass: f64, initial_orbit: f32, radius: f32) -> Self {
+    pub fn new(
+        mass: f64,
+        initial_orbit: f32,
+        radius: f32,
+    ) -> Self {
         Self {
             mass: Quantity::new(Kilograms::new(mass)),
-            initial_orbit: Quantity::new(Kilometers::new(initial_orbit)),
+            initial_orbit: Quantity::new(Kilometers::new(
+                initial_orbit,
+            )),
             radius: Quantity::new(Kilometers::new(radius)),
         }
     }

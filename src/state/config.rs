@@ -1,7 +1,7 @@
-use gset::Getset;
 use crate::util::data::config_data::ConfigData;
 use crate::util::physics::quantities::Quantity;
 use crate::util::physics::quantities::quantity_units::Seconds;
+use gset::Getset;
 
 /// Данные из файла конфигурации
 #[derive(Getset)]
@@ -43,16 +43,34 @@ impl Config {
     pub fn new() -> Self {
         ConfigData::init();
         Self {
-            seconds_per_tick: Quantity::new(Seconds::new(ConfigData::get("SECONDS_PER_TICK"))),
-            base_scale_change_factor: ConfigData::get("BASE_SCALE_CHANGE_FACTOR"),
-            path_to_solar_system_values: ConfigData::get("PATH_TO_SOLAR_SYSTEM_VALUES"),
-            step_formation: ConfigData::get("STEP_FORMATION"),
-            time_between_ticks_in_nanos: ConfigData::get("BASE_TIME_BETWEEN_TICKS_IN_NANOS"),
-            ticks_between_redraws: ConfigData::get("TICKS_BETWEEN_REDRAWS"),
+            seconds_per_tick: Quantity::new(Seconds::new(
+                ConfigData::get("SECONDS_PER_TICK"),
+            )),
+            base_scale_change_factor: ConfigData::get(
+                "BASE_SCALE_CHANGE_FACTOR",
+            ),
+            path_to_solar_system_values: ConfigData::get(
+                "PATH_TO_SOLAR_SYSTEM_VALUES",
+            ),
+            step_formation: ConfigData::get(
+                "STEP_FORMATION",
+            ),
+            time_between_ticks_in_nanos: ConfigData::get(
+                "BASE_TIME_BETWEEN_TICKS_IN_NANOS",
+            ),
+            ticks_between_redraws: ConfigData::get(
+                "TICKS_BETWEEN_REDRAWS",
+            ),
             default_scale: ConfigData::get("DEFAULT_SCALE"),
-            background_stars_count: ConfigData::get("BACKGROUND_STARS_COUNT"),
-            path_to_assets: ConfigData::get("PATH_TO_ASSETS"),
-            maximum_number_of_comets: ConfigData::get("MAXIMUM_NUMBER_OF_COMETS"),
+            background_stars_count: ConfigData::get(
+                "BACKGROUND_STARS_COUNT",
+            ),
+            path_to_assets: ConfigData::get(
+                "PATH_TO_ASSETS",
+            ),
+            maximum_number_of_comets: ConfigData::get(
+                "MAXIMUM_NUMBER_OF_COMETS",
+            ),
         }
     }
 }

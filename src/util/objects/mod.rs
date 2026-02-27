@@ -1,16 +1,15 @@
-use iced::{Color, Point};
 use iced::widget::image;
+use iced::{Color, Point};
 use num_traits::ToPrimitive;
 
 use crate::util::geometry::point::scale_point;
 use crate::util::objects::movement::ObjectMovement;
-use crate::util::objects::values::{FormValues, GravitationalForceValues};
+use crate::util::objects::values::{
+    FormValues, GravitationalForceValues,
+};
 use crate::util::physics::quantities::Quantity;
 use crate::util::physics::quantities::quantity_units::{
-    Kilograms,
-    Kilometers,
-    KilometersPerSecond,
-    Seconds,
+    Kilograms, Kilometers, KilometersPerSecond, Seconds,
 };
 use crate::util::physics::vector::VectorValue;
 
@@ -19,7 +18,8 @@ pub mod movement;
 pub mod values;
 
 /// Типаж объекта
-pub trait Object: GravitationalForceValues + FormValues + ObjectScalingSizes
+pub trait Object:
+    GravitationalForceValues + FormValues + ObjectScalingSizes
 {
     /// Имя
     fn name(&self) -> &str;
@@ -43,13 +43,17 @@ pub trait ObjectScalingSizes {
 
 impl<T: Object> ObjectScalingSizes for T {
     fn scaled_radius(&self, scale: u32) -> f32 {
-        self.radius().value().to_f32().unwrap() / (scale as f32)
+        self.radius().value().to_f32().unwrap()
+            / (scale as f32)
     }
 
     fn scaled_position(&self, scale: u32) -> Point {
         let Point { x, y } = self.position();
         scale_point(
-            Point::new(x.value().to_f32().unwrap(), y.value().to_f32().unwrap()),
+            Point::new(
+                x.value().to_f32().unwrap(),
+                y.value().to_f32().unwrap(),
+            ),
             scale as f32,
         )
     }
@@ -70,7 +74,11 @@ pub trait MovingObject: Object + ObjectMotion {
         time_interval: Quantity<Seconds>,
     );
     /// Траектория движения
-    fn trajectory<'a>(&'a self, step: u32, scale: f32) -> Box<dyn Iterator<Item=Point> + 'a>;
+    fn trajectory<'a>(
+        &'a self,
+        step: u32,
+        scale: f32,
+    ) -> Box<dyn Iterator<Item = Point> + 'a>;
     /// Цвет траектории
     fn trajectory_color(&self) -> Color;
 }
@@ -81,10 +89,17 @@ impl<T: Object + ObjectMotion> MovingObject for T {
         velocity_change: VectorValue<KilometersPerSecond>,
         time_interval: Quantity<Seconds>,
     ) {
-        self.movement_mut().update_position(velocity_change, time_interval);
+        self.movement_mut().update_position(
+            velocity_change,
+            time_interval,
+        );
     }
 
-    fn trajectory(&self, step: u32, scale: f32) -> Box<dyn Iterator<Item=Point> + '_> {
+    fn trajectory(
+        &self,
+        step: u32,
+        scale: f32,
+    ) -> Box<dyn Iterator<Item = Point> + '_> {
         Box::new(self.movement().trajectory(step, scale))
     }
 

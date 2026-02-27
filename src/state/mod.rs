@@ -5,17 +5,19 @@ use crate::state::config::Config;
 use crate::state::redraw::RedrawState;
 use crate::state::settings::Settings;
 use crate::state::space::SpaceState;
-use crate::state::system_position::{CursorPinch, SolarSystemPositionState};
+use crate::state::system_position::{
+    CursorPinch, SolarSystemPositionState,
+};
 use crate::state::view::ViewState;
 use crate::util::time::Time;
 
 mod caches;
 mod canvas;
 mod config;
-mod system_position;
+mod redraw;
 mod settings;
 mod space;
-mod redraw;
+mod system_position;
 mod view;
 
 /// Состояния программы
@@ -46,7 +48,9 @@ impl State {
             config.default_scale(),
         );
 
-        let redraw = RedrawState::new(config.ticks_between_redraws());
+        let redraw = RedrawState::new(
+            config.ticks_between_redraws(),
+        );
 
         let space = SpaceState::new(
             config.path_to_solar_system_values(),
@@ -63,7 +67,8 @@ impl State {
             time: Time::new(),
             settings,
             space,
-            system_position: SolarSystemPositionState::default(),
+            system_position:
+                SolarSystemPositionState::default(),
             config,
             redraw,
         }
@@ -72,16 +77,21 @@ impl State {
 
 impl State {
     fn step(&self) -> u32 {
-        self.settings.scale().value() / self.config.step_formation() + 1
+        self.settings.scale().value()
+            / self.config.step_formation()
+            + 1
     }
 }
 
 impl State {
     /// Обновление при тике
     pub fn update(&mut self) {
-        self.space.move_objects(self.settings.speed().value());
+        self.space
+            .move_objects(self.settings.speed().value());
         self.space.remove_crashed_comets();
-        self.time.add_seconds(self.settings.speed().value().value() as u16);
+        self.time.add_seconds(
+            self.settings.speed().value().value() as u16,
+        );
         if self.redraw.redraw_on_tick() {
             self.cache.clear_system();
         }
@@ -89,8 +99,11 @@ impl State {
 
     /// Изменение масштаба
     pub fn change_scale(&mut self, scale_change: i16) {
-        let scale_change_factor = self.config.base_scale_change_factor()
-            * (self.settings.scale().value() / self.config.step_formation() + 1);
+        let scale_change_factor =
+            self.config.base_scale_change_factor()
+                * (self.settings.scale().value()
+                    / self.config.step_formation()
+                    + 1);
 
         let scale =
             // Приближение
@@ -128,9 +141,13 @@ impl State {
     }
 
     /// Изменение масштаба по вводу
-    pub fn set_scale_from_input(&mut self, scale_string: String) {
+    pub fn set_scale_from_input(
+        &mut self,
+        scale_string: String,
+    ) {
         match scale_string.trim().parse::<u32>() {
-            Ok(scale) => { // Удовлетворительное изменение масштаба
+            Ok(scale) => {
+                // Удовлетворительное изменение масштаба
                 self.settings.scale_mut().set_value(scale);
                 self.cache.clear_system();
                 self.view.set_correct_scale_color();
@@ -139,7 +156,9 @@ impl State {
             _ => self.view.set_incorrect_scale_color(),
         }
 
-        self.settings.scale_mut().set_string_value(scale_string);
+        self.settings
+            .scale_mut()
+            .set_string_value(scale_string);
     }
 
     /// При нажатии на кнопку запуска симуляции
@@ -174,14 +193,19 @@ impl State {
     }
 
     /// При нажатии на левую кнопку мыши
-    pub fn on_left_button_pressed(&mut self, position: Point) {
-        self.system_position.set_pinch(CursorPinch::Clamped);
+    pub fn on_left_button_pressed(
+        &mut self,
+        position: Point,
+    ) {
+        self.system_position
+            .set_pinch(CursorPinch::Clamped);
         self.system_position.set_cursor_position(position);
     }
 
     /// Когда отпускается левая кнопка мыши
     pub fn on_left_button_released(&mut self) {
-        self.system_position.set_pinch(CursorPinch::NotClamped);
+        self.system_position
+            .set_pinch(CursorPinch::NotClamped);
         self.system_position.clear_cursor_position();
     }
 
@@ -209,7 +233,10 @@ impl State {
     }
 
     /// Нажатие на меню спутников планеты
-    pub fn satellites_view_toggle(&mut self, planet_name: String) {
+    pub fn satellites_view_toggle(
+        &mut self,
+        planet_name: String,
+    ) {
         self.view.toggle_satellites_view(planet_name);
     }
 }

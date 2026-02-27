@@ -1,10 +1,12 @@
-use iced::Point;
-use iced::widget::image;
 use crate::util::data::solar_system_data::SunData;
 use crate::util::objects::consts::SolarSystemObjectConsts;
 use crate::util::objects::{Object, ObjectView};
 use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
+use crate::util::physics::quantities::quantity_units::{
+    Kilograms, Kilometers, KilometersPerSecond,
+};
+use iced::Point;
+use iced::widget::image;
 
 pub struct Sun {
     consts: SolarSystemObjectConsts,
@@ -12,12 +14,21 @@ pub struct Sun {
 }
 
 impl Sun {
-    pub fn new(data: SunData, path_to_images: &str) -> Self {
-        let SunData { consts, image_filename} = data;
-        
+    pub fn new(
+        data: SunData,
+        path_to_images: &str,
+    ) -> Self {
+        let SunData { consts, image_filename } = data;
+
         Self {
-            consts: SolarSystemObjectConsts::new(consts.mass, 0., consts.radius),
-            image: image::Handle::from_path(format!("{path_to_images}/{image_filename}")),
+            consts: SolarSystemObjectConsts::new(
+                consts.mass,
+                0.,
+                consts.radius,
+            ),
+            image: image::Handle::from_path(format!(
+                "{path_to_images}/{image_filename}"
+            )),
         }
     }
 }
@@ -65,6 +76,7 @@ impl ObjectView for Sun {
 
     #[inline(always)]
     fn velocity_view(&self) -> String {
-        Quantity::new(KilometersPerSecond::new(0.)).to_string()
+        Quantity::new(KilometersPerSecond::new(0.))
+            .to_string()
     }
 }

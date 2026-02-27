@@ -23,7 +23,8 @@ impl RedrawState {
     pub fn redraw_on_tick(&mut self) -> bool {
         (self.ticks_until_redraw == 0).tap(|redraw| {
             if *redraw {
-                self.ticks_until_redraw = self.ticks_between_redraws;
+                self.ticks_until_redraw =
+                    self.ticks_between_redraws;
             } else {
                 self.ticks_until_redraw -= 1;
             }

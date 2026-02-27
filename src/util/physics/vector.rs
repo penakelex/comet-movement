@@ -3,11 +3,12 @@ use std::ops::{Add, Div, Mul};
 use iced::Vector;
 use num_traits::{Float, NumCast, ToPrimitive};
 
-use crate::util::physics::quantities::{NewQuantity, Quantity, QuantityUnit};
 use crate::util::physics::quantities::quantity_units::{
-    InterimQuantityUnit,
-    KilometersPerSecond,
+    InterimQuantityUnit, KilometersPerSecond,
     MetersPerSecond,
+};
+use crate::util::physics::quantities::{
+    NewQuantity, Quantity, QuantityUnit,
 };
 
 /// Физический вектор
@@ -15,9 +16,14 @@ use crate::util::physics::quantities::quantity_units::{
 pub type VectorValue<T>
 where
     T: QuantityUnit + NewQuantity + Copy + Clone,
-= crate::util::geometry::vector::VectorValue<Quantity<T>, T::Value>;
+= crate::util::geometry::vector::VectorValue<
+    Quantity<T>,
+    T::Value,
+>;
 
-impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
+impl<T: QuantityUnit + NewQuantity + Copy + Clone>
+    VectorValue<T>
+{
     #[inline(always)]
     pub fn to_vector(&self) -> Vector<T::Value> {
         Vector::new(
@@ -27,25 +33,40 @@ impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
     }
 
     #[inline(always)]
-    pub fn to_quantity_vector(&self) -> Vector<Quantity<T>> {
+    pub fn to_quantity_vector(
+        &self,
+    ) -> Vector<Quantity<T>> {
         Vector::new(
-            Quantity::new(T::new(self.value.value() * self.unit_vector.x)),
-            Quantity::new(T::new(self.value.value() * self.unit_vector.y)),
+            Quantity::new(T::new(
+                self.value.value() * self.unit_vector.x,
+            )),
+            Quantity::new(T::new(
+                self.value.value() * self.unit_vector.y,
+            )),
         )
     }
 
     #[inline(always)]
     pub fn unit_vector_f64(&self) -> Vector<f64> {
-        Vector::new(self.unit_vector.x.to_f64().unwrap(), self.unit_vector.y.to_f64().unwrap())
+        Vector::new(
+            self.unit_vector.x.to_f64().unwrap(),
+            self.unit_vector.y.to_f64().unwrap(),
+        )
     }
 }
 
 impl VectorValue<InterimQuantityUnit> {
     /// Перевод из неопределённой физической величины в конкретную
-    pub fn parse<Q: QuantityUnit + NewQuantity + Copy + Clone>(self) -> VectorValue<Q> {
+    pub fn parse<
+        Q: QuantityUnit + NewQuantity + Copy + Clone,
+    >(
+        self,
+    ) -> VectorValue<Q> {
         let unit_vector = Vector::new(
-            <Q::Value as NumCast>::from(self.unit_vector.x).unwrap(),
-            <Q::Value as NumCast>::from(self.unit_vector.y).unwrap(),
+            <Q::Value as NumCast>::from(self.unit_vector.x)
+                .unwrap(),
+            <Q::Value as NumCast>::from(self.unit_vector.y)
+                .unwrap(),
         );
 
         VectorValue::new(self.value.parse(), unit_vector)
@@ -54,10 +75,18 @@ impl VectorValue<InterimQuantityUnit> {
 
 impl VectorValue<MetersPerSecond> {
     /// Перевод скорости из м/с в км/с
-    pub fn to_kilometers_per_second(&self) -> VectorValue<KilometersPerSecond> {
-        let unit_vector = Vector::new(self.unit_vector.x as f32, self.unit_vector.y as f32);
+    pub fn to_kilometers_per_second(
+        &self,
+    ) -> VectorValue<KilometersPerSecond> {
+        let unit_vector = Vector::new(
+            self.unit_vector.x as f32,
+            self.unit_vector.y as f32,
+        );
 
-        VectorValue::new(self.value.to_kilometers_per_second(), unit_vector)
+        VectorValue::new(
+            self.value.to_kilometers_per_second(),
+            unit_vector,
+        )
     }
 }
 
@@ -69,8 +98,12 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn mul(self, scalar: Quantity<Q>) -> Self::Output {
-        let value = self.value.value_f64() * scalar.value_f64();
-        VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
+        let value =
+            self.value.value_f64() * scalar.value_f64();
+        VectorValue::new(
+            Quantity::new(InterimQuantityUnit::new(value)),
+            self.unit_vector_f64(),
+        )
     }
 }
 
@@ -82,8 +115,12 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn div(self, scalar: Quantity<Q>) -> Self::Output {
-        let value = self.value.value_f64() / scalar.value_f64();
-        VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
+        let value =
+            self.value.value_f64() / scalar.value_f64();
+        VectorValue::new(
+            Quantity::new(InterimQuantityUnit::new(value)),
+            self.unit_vector_f64(),
+        )
     }
 }
 
@@ -126,7 +163,11 @@ where
     type Output = VectorValue<InterimQuantityUnit>;
 
     fn div(self, scalar: F) -> Self::Output {
-        let value = self.value.value_f64() / scalar.to_f64().unwrap();
-        VectorValue::new(Quantity::new(InterimQuantityUnit::new(value)), self.unit_vector_f64())
+        let value = self.value.value_f64()
+            / scalar.to_f64().unwrap();
+        VectorValue::new(
+            Quantity::new(InterimQuantityUnit::new(value)),
+            self.unit_vector_f64(),
+        )
     }
 }

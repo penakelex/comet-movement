@@ -4,17 +4,26 @@ use std::rc::Weak;
 use crate::util::geometry::point::translate_point;
 use crate::util::objects::{MovingObject, Object};
 use iced::mouse::{Button, Cursor, ScrollDelta};
-use iced::widget::canvas::{self, Action, Event, Frame, Geometry, Path, Stroke, Style};
-use iced::{mouse, Color, Point, Rectangle, Renderer, Size, Theme, Vector};
+use iced::widget::canvas::{
+    self, Action, Event, Frame, Geometry, Path, Stroke,
+    Style,
+};
+use iced::{
+    Color, Point, Rectangle, Renderer, Size, Theme, Vector,
+    mouse,
+};
 use tap::TapOptional;
 
-use crate::objects::stars::Star;
-use crate::state::system_position::CursorPinch;
-use crate::state::State;
 use crate::Message;
+use crate::objects::stars::Star;
+use crate::state::State;
+use crate::state::system_position::CursorPinch;
 
 /// Перенос центра координатной системы на позицию Солнца
-fn translate_frame_to_new_center(frame: &mut Frame, center_position: Point) {
+fn translate_frame_to_new_center(
+    frame: &mut Frame,
+    center_position: Point,
+) {
     let frame_center = frame.center();
     frame.translate(Vector::new(
         frame_center.x + center_position.x,
@@ -25,7 +34,11 @@ fn translate_frame_to_new_center(frame: &mut Frame, center_position: Point) {
 /// Отрисовка фоновых звёзд
 fn draw_stars(frame: &mut Frame, stars: &[Star]) {
     // Задний фон "пустота"
-    frame.fill_rectangle(Point::ORIGIN, frame.size(), Color::BLACK);
+    frame.fill_rectangle(
+        Point::ORIGIN,
+        frame.size(),
+        Color::BLACK,
+    );
 
     let stars = Path::new(|path| {
         // Для преобразований относительных позиций звёзд в абсолютные
@@ -75,9 +88,9 @@ fn draw_system(
 
     // Отрисовка объектов
     all_objects.iter().for_each(|object| {
-        object
-            .upgrade()
-            .tap_some(|object_rc| draw_object(frame, scale, object_rc.borrow()));
+        object.upgrade().tap_some(|object_rc| {
+            draw_object(frame, scale, object_rc.borrow())
+        });
     });
 }
 
@@ -98,18 +111,21 @@ fn draw_object_orbit(
         );
 
         // Масшабированные позиции объекта с шагом, зависимым от масштаба
-        let mut object_positions = object.trajectory(step, scale as f32);
+        let mut object_positions =
+            object.trajectory(step, scale as f32);
 
         // Проверяем и передвигаем начальную позицию орбиты
-        let first_position = object_positions.next().unwrap();
+        let first_position =
+            object_positions.next().unwrap();
 
         builder.move_to(first_position);
 
-        let mut is_last_position_was_inside = bounds.contains(translate_point(
-            first_position,
-            system_center_position,
-            Point::ORIGIN,
-        ));
+        let mut is_last_position_was_inside = bounds
+            .contains(translate_point(
+                first_position,
+                system_center_position,
+                Point::ORIGIN,
+            ));
 
         for position in object_positions {
             // Позиция внутри окна
@@ -148,13 +164,20 @@ fn draw_object_orbit(
 }
 
 /// Отрисовка объекта
-fn draw_object(frame: &mut Frame, scale: u32, object: Ref<dyn Object>) {
+fn draw_object(
+    frame: &mut Frame,
+    scale: u32,
+    object: Ref<dyn Object>,
+) {
     let radius = object.scaled_radius(scale);
     let position = object.scaled_position(scale);
 
     // Определение границ изображения
     let bounds = Rectangle::new(
-        Point::new(position.x - radius, position.y - radius),
+        Point::new(
+            position.x - radius,
+            position.y - radius,
+        ),
         Size::new(radius * 2., radius * 2.),
     );
 
@@ -173,31 +196,49 @@ impl canvas::Program<Message> for State {
         cursor: Cursor,
     ) -> Option<Action<Message>> {
         match event {
-            Event::Mouse(mouse_event) => match mouse_event {
-                // Изменение масштаба
-                mouse::Event::WheelScrolled {
-                    delta: ScrollDelta::Lines { y, .. },
-                } => Some(Action::publish(Message::ScaleChange(*y as i16))),
+            Event::Mouse(mouse_event) => {
+                match mouse_event {
+                    // Изменение масштаба
+                    mouse::Event::WheelScrolled {
+                        delta: ScrollDelta::Lines { y, .. },
+                    } => Some(Action::publish(
+                        Message::ScaleChange(*y as i16),
+                    )),
 
-                // Перемещение Солнечной системы
-                mouse::Event::CursorMoved { position }
-                    if matches!(self.system_position.pinch(), CursorPinch::Clamped) =>
-                {
-                    Some(Action::publish(Message::PositionChange(*position)))
+                    // Перемещение Солнечной системы
+                    mouse::Event::CursorMoved {
+                        position,
+                    } if matches!(
+                        self.system_position.pinch(),
+                        CursorPinch::Clamped
+                    ) =>
+                    {
+                        Some(Action::publish(
+                            Message::PositionChange(
+                                *position,
+                            ),
+                        ))
+                    }
+
+                    // Начало перемещения Солнечной системы
+                    mouse::Event::ButtonPressed(
+                        Button::Left,
+                    ) => Some(Action::publish(
+                        Message::LeftButtonPressed(
+                            cursor.position().unwrap(),
+                        ),
+                    )),
+
+                    // Конец перемещения Солнечной системы
+                    mouse::Event::ButtonReleased(
+                        Button::Left,
+                    ) => Some(Action::publish(
+                        Message::LeftButtonReleased,
+                    )),
+
+                    _ => None,
                 }
-
-                // Начало перемещения Солнечной системы
-                mouse::Event::ButtonPressed(Button::Left) => Some(Action::publish(
-                    Message::LeftButtonPressed(cursor.position().unwrap()),
-                )),
-
-                // Конец перемещения Солнечной системы
-                mouse::Event::ButtonReleased(Button::Left) => {
-                    Some(Action::publish(Message::LeftButtonReleased))
-                }
-
-                _ => None,
-            },
+            }
             _ => None,
         }
     }
@@ -210,21 +251,27 @@ impl canvas::Program<Message> for State {
         bounds: Rectangle,
         _: Cursor,
     ) -> Vec<Geometry<Renderer>> {
-        let stars = self.cache.stars().draw(renderer, bounds.size(), |frame| {
-            draw_stars(frame, self.space.stars())
-        });
+        let stars = self.cache.stars().draw(
+            renderer,
+            bounds.size(),
+            |frame| draw_stars(frame, self.space.stars()),
+        );
 
-        let system = self.cache.system().draw(renderer, bounds.size(), |frame| {
-            draw_system(
-                frame,
-                self.system_position.center_position(),
-                bounds,
-                self.settings.scale().value(),
-                self.step(),
-                self.space.all_objects(),
-                self.space.moving_objects(),
-            )
-        });
+        let system = self.cache.system().draw(
+            renderer,
+            bounds.size(),
+            |frame| {
+                draw_system(
+                    frame,
+                    self.system_position.center_position(),
+                    bounds,
+                    self.settings.scale().value(),
+                    self.step(),
+                    self.space.all_objects(),
+                    self.space.moving_objects(),
+                )
+            },
+        );
 
         vec![stars, system]
     }

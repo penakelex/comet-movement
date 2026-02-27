@@ -1,19 +1,17 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use iced::{Color, Point};
-use iced::widget::image;
 use crate::util::data::solar_system_data::ObjectConsts;
-use crate::util::objects::{Object, ObjectMotion};
 use crate::util::objects::consts::SolarSystemObjectConsts;
 use crate::util::objects::movement::ObjectMovement;
+use crate::util::objects::{Object, ObjectMotion};
 use crate::util::physics::formulas::orbital_velocity;
 use crate::util::physics::quantities::Quantity;
 use crate::util::physics::quantities::quantity_units::{
-    Kilograms,
-    Kilometers,
-    KilometersPerSecond,
+    Kilograms, Kilometers, KilometersPerSecond,
 };
+use iced::widget::image;
+use iced::{Color, Point};
 
 use crate::objects::satellite::Satellite;
 
@@ -56,10 +54,13 @@ impl Planet {
         );
 
         // Запись спутников
-        let satellites = satellites.into_iter()
-            .map(|satellite| Rc::new(RefCell::new(satellite)))
+        let satellites = satellites
+            .into_iter()
+            .map(|satellite| {
+                Rc::new(RefCell::new(satellite))
+            })
             .collect();
-        
+
         Self {
             name: planet_name,
             consts,
@@ -68,9 +69,13 @@ impl Planet {
             satellites,
         }
     }
-    
+
     /// Расчёт начальной позиции
-    pub fn initial_position(sun_radius: f32, planet_orbit: f32, planet_radius: f32) -> f32 {
+    pub fn initial_position(
+        sun_radius: f32,
+        planet_orbit: f32,
+        planet_radius: f32,
+    ) -> f32 {
         sun_radius + planet_orbit + planet_radius
     }
 }
@@ -87,7 +92,9 @@ impl Planet {
     }
 
     #[inline(always)]
-    pub fn satellites_mut(&mut self) -> &mut [Rc<RefCell<Satellite>>] {
+    pub fn satellites_mut(
+        &mut self,
+    ) -> &mut [Rc<RefCell<Satellite>>] {
         self.satellites.as_mut_slice()
     }
 }
@@ -133,10 +140,15 @@ impl ObjectMotion for Planet {
 
 impl Planet {
     // При перезагрузке симуляции
-    pub fn reload(&mut self, sun_mass: Quantity<Kilograms>) {
+    pub fn reload(
+        &mut self,
+        sun_mass: Quantity<Kilograms>,
+    ) {
         let velocity = orbital_velocity(
             sun_mass,
-            Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
+            Quantity::new(Kilometers::new(
+                self.consts.initial_orbit().value(),
+            )),
         );
 
         // Обновление движения

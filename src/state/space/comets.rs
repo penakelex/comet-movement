@@ -26,11 +26,18 @@ pub struct CometsState {
 
 impl CometsState {
     #[inline(always)]
-    pub fn new(possible_values: CometPossibleValues, maximum_number_of_comets: u8) -> Self {
+    pub fn new(
+        possible_values: CometPossibleValues,
+        maximum_number_of_comets: u8,
+    ) -> Self {
         Self {
             possible_values,
-            comets: Vec::with_capacity(maximum_number_of_comets as usize),
-            taken_colors_indices: HashSet::with_capacity(maximum_number_of_comets as usize),
+            comets: Vec::with_capacity(
+                maximum_number_of_comets as usize,
+            ),
+            taken_colors_indices: HashSet::with_capacity(
+                maximum_number_of_comets as usize,
+            ),
             new_comet_number: 1,
             maximum_number_of_comets,
         }
@@ -54,13 +61,16 @@ impl CometsState {
 
 impl CometsState {
     /// Добавление новой кометы
-    pub fn add_new_comet(&mut self) -> Option<Rc<RefCell<Comet>>> {
+    pub fn add_new_comet(
+        &mut self,
+    ) -> Option<Rc<RefCell<Comet>>> {
         if self.comets.capacity() == self.comets.len() {
             return None;
         }
 
         // Получение индекса свободного цвета
-        let free_color_index = self.free_comet_color_index();
+        let free_color_index =
+            self.free_comet_color_index();
         self.taken_colors_indices.insert(free_color_index);
 
         let comet = Rc::new(RefCell::new(Comet::new(
@@ -103,7 +113,9 @@ impl CometsState {
     /// Поиск свободного индекса кометы
     fn free_comet_color_index(&self) -> u8 {
         (0..self.maximum_number_of_comets)
-            .filter(|index| !self.taken_colors_indices.contains(index))
+            .filter(|index| {
+                !self.taken_colors_indices.contains(index)
+            })
             .choose(&mut rand::rng())
             .unwrap()
     }
@@ -114,17 +126,25 @@ impl CometsState {
     pub fn delete_comet(&mut self, comet_number: u8) {
         // Если индекс существует
         if (0..self.count()).contains(&comet_number) {
-            let comet_rc = self.comets.remove(comet_number as usize);
+            let comet_rc =
+                self.comets.remove(comet_number as usize);
             let comet = comet_rc.borrow();
 
             // Ищем и удаляем из занятых индекс цвета кометы
             let trajectory_color = comet.trajectory_color();
-            let trajectory_color_rgb = &trajectory_color.into_rgba8()[0..3];
+            let trajectory_color_rgb =
+                &trajectory_color.into_rgba8()[0..3];
 
-            for (index, color) in self.possible_values.colors().iter().enumerate() {
+            for (index, color) in self
+                .possible_values
+                .colors()
+                .iter()
+                .enumerate()
+            {
                 let color_rgb = &color.into_rgba8()[0..3];
                 if trajectory_color_rgb == color_rgb {
-                    self.taken_colors_indices.remove(&(index as u8));
+                    self.taken_colors_indices
+                        .remove(&(index as u8));
                 }
             }
         }

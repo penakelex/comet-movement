@@ -26,7 +26,8 @@ impl Time {
 impl Time {
     /// Является ли год високосным
     fn is_year_leap(&self) -> bool {
-        self.year.is_multiple_of(4) && self.year.is_multiple_of(100)
+        self.year.is_multiple_of(4)
+            && self.year.is_multiple_of(100)
             || self.year.is_multiple_of(400)
     }
 
@@ -57,7 +58,8 @@ impl Time {
 
     /// Добавление к текущему времени секунд
     pub fn add_seconds(&mut self, seconds: u16) {
-        let current_summary_seconds = seconds + self.second as u16;
+        let current_summary_seconds =
+            seconds + self.second as u16;
 
         self.second = (current_summary_seconds % 60) as u8;
 
@@ -65,7 +67,8 @@ impl Time {
             return;
         }
 
-        let current_summary_minutes = self.minute as u16 + current_summary_seconds / 60;
+        let current_summary_minutes = self.minute as u16
+            + current_summary_seconds / 60;
 
         self.minute = (current_summary_minutes % 60) as u8;
 
@@ -73,7 +76,8 @@ impl Time {
             return;
         }
 
-        let current_summary_hours = self.hour as u16 + current_summary_minutes / 60;
+        let current_summary_hours =
+            self.hour as u16 + current_summary_minutes / 60;
 
         self.hour = (current_summary_hours % 24) as u8;
 
@@ -81,11 +85,14 @@ impl Time {
             return;
         }
 
-        let current_summary_days = self.day as u16 + current_summary_hours / 24;
+        let current_summary_days =
+            self.day as u16 + current_summary_hours / 24;
 
         let days_in_month = self.days_in_month();
 
-        self.day = (current_summary_days % (days_in_month + 1) as u16) as u8;
+        self.day = (current_summary_days
+            % (days_in_month + 1) as u16)
+            as u8;
 
         if current_summary_days as u8 <= days_in_month {
             return;
@@ -113,11 +120,19 @@ impl Time {
 }
 
 impl Display for Time {
-    fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        fmt: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(
             fmt,
             "{:02}.{:02}.{:04} {:02}:{:02}:{:02}",
-            self.day, self.month, self.year, self.hour, self.minute, self.second,
+            self.day,
+            self.month,
+            self.year,
+            self.hour,
+            self.minute,
+            self.second,
         )
     }
 }

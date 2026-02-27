@@ -4,17 +4,26 @@ use iced::Point;
 use crate::util::geometry::circle::Circle;
 use crate::util::objects::Object;
 use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers};
+use crate::util::physics::quantities::quantity_units::{
+    Kilograms, Kilometers,
+};
 
 /// Типаж значений объекта для вычисления гравитационной силы
 pub trait GravitationalForceValues {
     /// Значения объекта для вычисления гравитационной силы
-    fn gravitational_force_values(&self) -> ObjectGravitationalForceValues;
+    fn gravitational_force_values(
+        &self,
+    ) -> ObjectGravitationalForceValues;
 }
 
 impl<T: Object> GravitationalForceValues for T {
-    fn gravitational_force_values(&self) -> ObjectGravitationalForceValues {
-        ObjectGravitationalForceValues::new(self.position(), self.mass())
+    fn gravitational_force_values(
+        &self,
+    ) -> ObjectGravitationalForceValues {
+        ObjectGravitationalForceValues::new(
+            self.position(),
+            self.mass(),
+        )
     }
 }
 
@@ -31,11 +40,11 @@ pub struct ObjectGravitationalForceValues {
 
 impl ObjectGravitationalForceValues {
     #[inline(always)]
-    pub const fn new(position: Point<Quantity<Kilometers>>, mass: Quantity<Kilograms>) -> Self {
-        Self {
-            position,
-            mass,
-        }
+    pub const fn new(
+        position: Point<Quantity<Kilometers>>,
+        mass: Quantity<Kilograms>,
+    ) -> Self {
+        Self { position, mass }
     }
 }
 
@@ -47,7 +56,10 @@ pub trait FormValues {
 
 impl<T: Object> FormValues for T {
     fn form_values(&self) -> ObjectFormValues {
-        ObjectFormValues::new(self.position(), self.radius())
+        ObjectFormValues::new(
+            self.position(),
+            self.radius(),
+        )
     }
 }
 
@@ -64,11 +76,11 @@ pub struct ObjectFormValues {
 
 impl ObjectFormValues {
     #[inline(always)]
-    pub const fn new(position: Point<Quantity<Kilometers>>, radius: Quantity<Kilometers>) -> Self {
-        Self {
-            position,
-            radius,
-        }
+    pub const fn new(
+        position: Point<Quantity<Kilometers>>,
+        radius: Quantity<Kilometers>,
+    ) -> Self {
+        Self { position, radius }
     }
 }
 
@@ -76,7 +88,10 @@ impl From<ObjectFormValues> for Circle {
     fn from(value: ObjectFormValues) -> Self {
         let center_position = value.position();
         Circle::new(
-            Point::new(center_position.x.value(), center_position.y.value()),
+            Point::new(
+                center_position.x.value(),
+                center_position.y.value(),
+            ),
             value.radius().value(),
         )
     }

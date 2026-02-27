@@ -31,7 +31,7 @@ impl Speed {
             Speed::X8(time) => Self::X16(*time * 2),
             Speed::X16(time) => Self::X16(*time),
         };
-        
+
         *self = next;
     }
 
@@ -43,7 +43,7 @@ impl Speed {
             Speed::X8(time) => Self::X4(*time / 2),
             Speed::X16(time) => Self::X8(*time / 2),
         };
-        
+
         *self = previous;
     }
 }
@@ -57,7 +57,7 @@ impl Speed {
             Speed::X8(value) => *value,
             Speed::X16(value) => *value,
         };
-        
+
         Quantity::new(Seconds::new(value as f32))
     }
 }
@@ -69,9 +69,13 @@ impl Speed {
 }
 
 impl Display for Speed {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        fmt: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(
-            fmt, "x{value}",
+            fmt,
+            "x{value}",
             value = match self {
                 Speed::X1(_) => 1,
                 Speed::X2(_) => 2,

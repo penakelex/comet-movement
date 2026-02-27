@@ -1,4 +1,6 @@
-use crate::util::physics::quantities::{NewQuantity, QuantityUnit};
+use crate::util::physics::quantities::{
+    NewQuantity, QuantityUnit,
+};
 
 /// Физическая единица силы: Ньютоны
 #[derive(Copy, Clone)]

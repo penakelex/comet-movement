@@ -16,7 +16,7 @@ impl StateCache {
     pub fn clear_system(&self) {
         self.system.clear();
     }
-    
+
     pub fn clear_all(&self) {
         self.stars.clear();
         self.system.clear();

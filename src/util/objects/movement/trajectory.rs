@@ -1,11 +1,13 @@
-use std::collections::VecDeque;
 use gset::Getset;
 use iced::{Color, Point, Vector};
 use num_traits::Float;
+use std::collections::VecDeque;
 use tap::Tap;
 
-use crate::util::physics::quantities::{point_without_quantity_units, Quantity};
 use crate::util::physics::quantities::quantity_units::Kilometers;
+use crate::util::physics::quantities::{
+    Quantity, point_without_quantity_units,
+};
 
 /// Траектория двигающегося объекта
 #[derive(Getset)]
@@ -27,13 +29,19 @@ impl Trajectory {
         color: Color,
     ) -> Self {
         let trajectory = VecDeque::with_capacity(10_000)
-            .tap_mut(|trajectory| trajectory
-                .push_back(point_without_quantity_units(starting_position))
-            );
+            .tap_mut(|trajectory| {
+                trajectory.push_back(
+                    point_without_quantity_units(
+                        starting_position,
+                    ),
+                )
+            });
 
         Self {
             is_closed: false,
-            closing: Some(TrajectoryClosing::new(initial_velocity_vector)),
+            closing: Some(TrajectoryClosing::new(
+                initial_velocity_vector,
+            )),
             color,
             positions: trajectory,
         }
@@ -43,9 +51,19 @@ impl Trajectory {
 impl Trajectory {
     /// Позиции тела с пропуском некоторых точек и масштабированием
     #[inline(always)]
-    pub fn positions(&self, step: u32, scale: f32) -> impl Iterator<Item=Point> + '_ {
-        self.positions.iter().step_by(step as usize)
-            .map(move |position| Point::new(position.x / scale, position.y / scale))
+    pub fn positions(
+        &self,
+        step: u32,
+        scale: f32,
+    ) -> impl Iterator<Item = Point> + '_ {
+        self.positions.iter().step_by(step as usize).map(
+            move |position| {
+                Point::new(
+                    position.x / scale,
+                    position.y / scale,
+                )
+            },
+        )
     }
 }
 
@@ -56,7 +74,9 @@ impl Trajectory {
         position: Point<Quantity<Kilometers>>,
         velocity_vector: Vector<F>,
     ) {
-        self.positions.push_back(point_without_quantity_units(position));
+        self.positions.push_back(
+            point_without_quantity_units(position),
+        );
 
         // Траектория замкнута
         if self.is_closed {
@@ -72,19 +92,29 @@ impl Trajectory {
         if closing.direction == direction {
             return;
         }
-        
+
         match direction {
-            Direction::LeftDown => closing.is_left_down_used = true,
-            Direction::LeftUp => closing.is_left_up_used = true,
-            Direction::RightDown => closing.is_right_down_used = true,
-            Direction::RightUp => closing.is_right_up_used = true,
+            Direction::LeftDown => {
+                closing.is_left_down_used = true
+            }
+            Direction::LeftUp => {
+                closing.is_left_up_used = true
+            }
+            Direction::RightDown => {
+                closing.is_right_down_used = true
+            }
+            Direction::RightUp => {
+                closing.is_right_up_used = true
+            }
         }
 
         closing.direction = direction;
 
         // Каждое направление уже было
-        if closing.is_left_down_used && closing.is_left_up_used
-            && closing.is_right_down_used && closing.is_right_up_used
+        if closing.is_left_down_used
+            && closing.is_left_up_used
+            && closing.is_right_down_used
+            && closing.is_right_up_used
         {
             if !closing.is_all_directions_used {
                 closing.is_all_directions_used = true;
@@ -97,7 +127,6 @@ impl Trajectory {
         }
     }
 }
-
 
 /// Значения для проверки замкнутости траектории
 struct TrajectoryClosing {
@@ -116,9 +145,13 @@ struct TrajectoryClosing {
 
 impl TrajectoryClosing {
     #[inline(always)]
-    pub fn new<F: Float>(initial_velocity_vector: Vector<F>) -> Self {
+    pub fn new<F: Float>(
+        initial_velocity_vector: Vector<F>,
+    ) -> Self {
         Self {
-            direction: Direction::from(initial_velocity_vector),
+            direction: Direction::from(
+                initial_velocity_vector,
+            ),
             is_left_down_used: false,
             is_left_up_used: false,
             is_right_down_used: false,
@@ -141,13 +174,27 @@ enum Direction {
     RightUp,
 }
 
-
 impl<F: Float> From<Vector<F>> for Direction {
     fn from(vector: Vector<F>) -> Self {
         match (vector.x, vector.y) {
-            (x, y) if x.is_sign_positive() && y.is_sign_positive() => Self::RightDown,
-            (x, y) if x.is_sign_positive() && y.is_sign_negative() => Self::RightUp,
-            (x, y) if x.is_sign_negative() && y.is_sign_positive() => Self::LeftDown,
+            (x, y)
+                if x.is_sign_positive()
+                    && y.is_sign_positive() =>
+            {
+                Self::RightDown
+            }
+            (x, y)
+                if x.is_sign_positive()
+                    && y.is_sign_negative() =>
+            {
+                Self::RightUp
+            }
+            (x, y)
+                if x.is_sign_negative()
+                    && y.is_sign_positive() =>
+            {
+                Self::LeftDown
+            }
             _ => Self::LeftUp,
         }
     }

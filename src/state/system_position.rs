@@ -18,7 +18,10 @@ impl SolarSystemPositionState {
         self.pinch = cursor_pinch;
     }
 
-    pub fn set_cursor_position(&mut self, cursor_position: Point) {
+    pub fn set_cursor_position(
+        &mut self,
+        cursor_position: Point,
+    ) {
         self.last_cursor_position = Some(cursor_position);
     }
 
@@ -26,11 +29,18 @@ impl SolarSystemPositionState {
         self.last_cursor_position = None;
     }
 
-    pub fn move_center_position(&mut self, cursor_position: Point) {
-        if let Some(last_position) = self.last_cursor_position {
+    pub fn move_center_position(
+        &mut self,
+        cursor_position: Point,
+    ) {
+        if let Some(last_position) =
+            self.last_cursor_position
+        {
             self.center_position = Point::new(
-                self.center_position.x + cursor_position.x - last_position.x,
-                self.center_position.y + cursor_position.y - last_position.y,
+                self.center_position.x + cursor_position.x
+                    - last_position.x,
+                self.center_position.y + cursor_position.y
+                    - last_position.y,
             );
         }
 

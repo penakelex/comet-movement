@@ -3,8 +3,8 @@ use gset::Getset;
 use crate::state::settings::scale::Scale;
 use crate::state::settings::speed::Speed;
 
-pub mod speed;
 pub mod scale;
+pub mod speed;
 
 /// Настройки пользователя
 #[derive(Getset)]
@@ -24,7 +24,10 @@ pub struct Settings {
 
 impl Settings {
     #[inline]
-    pub fn new(base_time_between_ticks: u16, default_scale: u32) -> Self {
+    pub fn new(
+        base_time_between_ticks: u16,
+        default_scale: u32,
+    ) -> Self {
         Self {
             speed: Speed::new(base_time_between_ticks),
             scale: Scale::new(default_scale),
@@ -40,7 +43,11 @@ impl Settings {
 }
 
 impl Settings {
-    pub fn reload(&mut self, base_time_between_ticks: u16, default_scale: u32) {
+    pub fn reload(
+        &mut self,
+        base_time_between_ticks: u16,
+        default_scale: u32,
+    ) {
         self.speed.reload(base_time_between_ticks);
         self.scale.reload(default_scale);
         self.is_running = false;

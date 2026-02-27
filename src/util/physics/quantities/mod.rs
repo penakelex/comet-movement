@@ -5,11 +5,8 @@ use iced::Point;
 use num_traits::{Float, NumCast, ToPrimitive};
 
 use crate::util::physics::quantities::quantity_units::{
-    InterimQuantityUnit,
-    Kilometers,
-    KilometersPerSecond,
-    Meters,
-    MetersPerSecond,
+    InterimQuantityUnit, Kilometers, KilometersPerSecond,
+    Meters, MetersPerSecond,
 };
 
 pub mod quantity_units;
@@ -30,9 +27,13 @@ pub trait NewQuantity: QuantityUnit {
 
 /// Физическая величина
 #[derive(Copy, Clone)]
-pub struct Quantity<T: QuantityUnit + NewQuantity + Copy + Clone>(T);
+pub struct Quantity<
+    T: QuantityUnit + NewQuantity + Copy + Clone,
+>(T);
 
-impl<T: QuantityUnit + NewQuantity + Copy + Clone> Quantity<T> {
+impl<T: QuantityUnit + NewQuantity + Copy + Clone>
+    Quantity<T>
+{
     #[inline(always)]
     pub const fn new(quantity_unit: T) -> Self {
         Self(quantity_unit)
@@ -51,28 +52,46 @@ impl<T: QuantityUnit + NewQuantity + Copy + Clone> Quantity<T> {
 
 impl Quantity<InterimQuantityUnit> {
     /// Перевод физической величины в конкретную
-    pub fn parse<T: QuantityUnit + NewQuantity + Copy + Clone>(&self) -> Quantity<T> {
-        Quantity::new(T::new(<T::Value as NumCast>::from(self.value()).unwrap()))
+    pub fn parse<
+        T: QuantityUnit + NewQuantity + Copy + Clone,
+    >(
+        &self,
+    ) -> Quantity<T> {
+        Quantity::new(T::new(
+            <T::Value as NumCast>::from(self.value())
+                .unwrap(),
+        ))
     }
 }
 
 impl Quantity<Kilometers> {
     /// Перевод из км в м
     pub fn to_meters(self) -> Quantity<Meters> {
-        Quantity::new(Meters::new((self.value() as f64) * 1e3))
+        Quantity::new(Meters::new(
+            (self.value() as f64) * 1e3,
+        ))
     }
 }
 
 impl Quantity<MetersPerSecond> {
     /// Перевод из м/с в км/с
     #[inline(always)]
-    pub fn to_kilometers_per_second(self) -> Quantity<KilometersPerSecond> {
-        Quantity::new(KilometersPerSecond::new((self.value() / 1e3) as f32))
+    pub fn to_kilometers_per_second(
+        self,
+    ) -> Quantity<KilometersPerSecond> {
+        Quantity::new(KilometersPerSecond::new(
+            (self.value() / 1e3) as f32,
+        ))
     }
 }
 
-impl<T: QuantityUnit + NewQuantity + Copy + Clone> Display for Quantity<T> {
-    fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
+impl<T: QuantityUnit + NewQuantity + Copy + Clone> Display
+    for Quantity<T>
+{
+    fn fmt(
+        &self,
+        fmt: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(fmt, "{} {}", self.value(), self.0.marking())
     }
 }
@@ -85,7 +104,9 @@ where
     type Output = Quantity<InterimQuantityUnit>;
 
     fn add(self, other: Quantity<Q>) -> Self::Output {
-        Quantity::new(InterimQuantityUnit::new(self.value_f64() + other.value_f64()))
+        Quantity::new(InterimQuantityUnit::new(
+            self.value_f64() + other.value_f64(),
+        ))
     }
 }
 
@@ -97,7 +118,9 @@ where
     type Output = Quantity<InterimQuantityUnit>;
 
     fn mul(self, other: Quantity<Q>) -> Self::Output {
-        Quantity::new(InterimQuantityUnit::new(self.value_f64() * other.value_f64()))
+        Quantity::new(InterimQuantityUnit::new(
+            self.value_f64() * other.value_f64(),
+        ))
     }
 }
 
@@ -109,7 +132,9 @@ where
     type Output = Quantity<InterimQuantityUnit>;
 
     fn sub(self, other: Quantity<Q>) -> Self::Output {
-        Quantity::new(InterimQuantityUnit::new(self.value_f64() - other.value_f64()))
+        Quantity::new(InterimQuantityUnit::new(
+            self.value_f64() - other.value_f64(),
+        ))
     }
 }
 
@@ -121,12 +146,16 @@ where
     type Output = Quantity<InterimQuantityUnit>;
 
     fn div(self, other: Quantity<Q>) -> Self::Output {
-        Quantity::new(InterimQuantityUnit::new(self.value_f64() / other.value_f64()))
+        Quantity::new(InterimQuantityUnit::new(
+            self.value_f64() / other.value_f64(),
+        ))
     }
 }
 
 /// Представление позиции тела без физических единиц
-pub fn point_without_quantity_units<T>(Point { x, y }: Point<Quantity<T>>) -> Point<T::Value>
+pub fn point_without_quantity_units<T>(
+    Point { x, y }: Point<Quantity<T>>,
+) -> Point<T::Value>
 where
     T: QuantityUnit + NewQuantity + Copy + Clone,
 {

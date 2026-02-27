@@ -1,12 +1,14 @@
-use iced::{Color, Point};
-use iced::widget::image;
 use crate::util::data::solar_system_data::SatelliteData;
-use crate::util::objects::{Object, ObjectMotion};
 use crate::util::objects::consts::SolarSystemObjectConsts;
 use crate::util::objects::movement::ObjectMovement;
+use crate::util::objects::{Object, ObjectMotion};
 use crate::util::physics::formulas::orbital_velocity;
 use crate::util::physics::quantities::Quantity;
-use crate::util::physics::quantities::quantity_units::{Kilograms, Kilometers, KilometersPerSecond};
+use crate::util::physics::quantities::quantity_units::{
+    Kilograms, Kilometers, KilometersPerSecond,
+};
+use iced::widget::image;
+use iced::{Color, Point};
 
 /// Спутник
 pub struct Satellite {
@@ -39,7 +41,9 @@ impl Satellite {
         // Вычисление орбитальной скорости вокруг планеты
         let velocity = orbital_velocity(
             Quantity::new(Kilograms::new(planet_mass)),
-            Quantity::new(Kilometers::new(satellite_consts.orbit)),
+            Quantity::new(Kilometers::new(
+                satellite_consts.orbit,
+            )),
         );
 
         // Запись констант
@@ -60,7 +64,9 @@ impl Satellite {
             name,
             consts,
             movement,
-            image: image::Handle::from_path(format!("{path_to_images}/{image_filename}")),
+            image: image::Handle::from_path(format!(
+                "{path_to_images}/{image_filename}"
+            )),
         }
     }
 }
@@ -115,14 +121,19 @@ impl Satellite {
     ) {
         let velocity = orbital_velocity(
             Quantity::new(Kilograms::new(planet_mass)),
-            Quantity::new(Kilometers::new(self.consts.initial_orbit().value())),
+            Quantity::new(Kilometers::new(
+                self.consts.initial_orbit().value(),
+            )),
         );
-        
+
         // Обновление движение
-        self.movement = ObjectMovement::new_solar_system_object_movement(
-            (velocity + planet_velocity).parse(),
-            planet_initial_orbit + planet_radius + self.consts.initial_orbit().value(),
-            self.movement.trajectory_color(),
-        )
+        self.movement =
+            ObjectMovement::new_solar_system_object_movement(
+                (velocity + planet_velocity).parse(),
+                planet_initial_orbit
+                    + planet_radius
+                    + self.consts.initial_orbit().value(),
+                self.movement.trajectory_color(),
+            )
     }
 }
