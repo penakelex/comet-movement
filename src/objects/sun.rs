@@ -23,18 +23,22 @@ impl Sun {
 }
 
 impl Object for Sun {
+    #[inline(always)]
     fn name(&self) -> &str {
         "Sun"
     }
 
+    #[inline(always)]
     fn mass(&self) -> Quantity<Kilograms> {
         self.consts.mass()
     }
 
+    #[inline(always)]
     fn radius(&self) -> Quantity<Kilometers> {
         self.consts.radius()
     }
 
+    #[inline(always)]
     fn position(&self) -> Point<Quantity<Kilometers>> {
         Point {
             x: Quantity::new(Kilometers::new(0.)),
@@ -42,20 +46,24 @@ impl Object for Sun {
         }
     }
 
+    #[inline(always)]
     fn image(&self) -> &image::Handle {
         &self.image
     }
 }
 
 impl ObjectView for Sun {
+    #[inline(always)]
     fn image_view(&self) -> &image::Handle {
         &self.image
     }
 
+    #[inline(always)]
     fn name_view(&self) -> String {
         self.name().to_string()
     }
 
+    #[inline(always)]
     fn velocity_view(&self) -> String {
         Quantity::new(KilometersPerSecond::new(0.)).to_string()
     }

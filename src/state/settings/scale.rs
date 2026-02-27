@@ -12,6 +12,7 @@ pub struct Scale {
 }
 
 impl Scale {
+    #[inline(always)]
     pub fn new(default_scale: u32) -> Self {
         Self {
             value: default_scale,

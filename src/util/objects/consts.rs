@@ -17,6 +17,7 @@ pub struct SolarSystemObjectConsts {
 }
 
 impl SolarSystemObjectConsts {
+    #[inline(always)]
     pub fn new(mass: f64, initial_orbit: f32, radius: f32) -> Self {
         Self {
             mass: Quantity::new(Kilograms::new(mass)),

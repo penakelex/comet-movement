@@ -39,6 +39,7 @@ pub struct Config {
 }
 
 impl Config {
+    #[inline(always)]
     pub fn new() -> Self {
         ConfigData::init();
         Self {

@@ -18,6 +18,7 @@ where
 = crate::util::geometry::vector::VectorValue<Quantity<T>, T::Value>;
 
 impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
+    #[inline(always)]
     pub fn to_vector(&self) -> Vector<T::Value> {
         Vector::new(
             self.value.value() * self.unit_vector.x,
@@ -25,6 +26,7 @@ impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
         )
     }
 
+    #[inline(always)]
     pub fn to_quantity_vector(&self) -> Vector<Quantity<T>> {
         Vector::new(
             Quantity::new(T::new(self.value.value() * self.unit_vector.x)),
@@ -32,6 +34,7 @@ impl<T: QuantityUnit + NewQuantity + Copy + Clone> VectorValue<T> {
         )
     }
 
+    #[inline(always)]
     pub fn unit_vector_f64(&self) -> Vector<f64> {
         Vector::new(self.unit_vector.x.to_f64().unwrap(), self.unit_vector.y.to_f64().unwrap())
     }

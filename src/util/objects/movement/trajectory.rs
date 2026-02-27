@@ -42,6 +42,7 @@ impl Trajectory {
 
 impl Trajectory {
     /// Позиции тела с пропуском некоторых точек и масштабированием
+    #[inline(always)]
     pub fn positions(&self, step: u32, scale: f32) -> impl Iterator<Item=Point> + '_ {
         self.positions.iter().step_by(step as usize)
             .map(move |position| Point::new(position.x / scale, position.y / scale))
@@ -114,6 +115,7 @@ struct TrajectoryClosing {
 }
 
 impl TrajectoryClosing {
+    #[inline(always)]
     pub fn new<F: Float>(initial_velocity_vector: Vector<F>) -> Self {
         Self {
             direction: Direction::from(initial_velocity_vector),

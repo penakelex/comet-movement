@@ -213,9 +213,3 @@ impl State {
         self.view.toggle_satellites_view(planet_name);
     }
 }
-
-impl Default for State {
-    fn default() -> Self {
-        Self::new()
-    }
-}

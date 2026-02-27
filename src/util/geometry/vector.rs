@@ -10,6 +10,7 @@ pub struct VectorValue<T, V> {
 }
 
 impl<T, V> VectorValue<T, V> {
+    #[inline(always)]
     pub const fn new(value: T, unit_vector: Vector<V>) -> Self {
         Self {
             value,

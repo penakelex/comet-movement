@@ -1,7 +1,7 @@
 use gset::Getset;
 use iced::{Color, Point, Vector};
 use iced::widget::image;
-use rand::{Rng, thread_rng};
+use rand::RngExt;
 use rand::rngs::ThreadRng;
 use crate::util::data::solar_system_data::CometData;
 use crate::util::objects::{Object, ObjectMotion};
@@ -35,7 +35,7 @@ impl Comet {
         image_index: u8,
         trajectory_color_index: u8,
     ) -> Self {
-        let mut thread_rng = thread_rng();
+        let mut thread_rng = rand::rng();
 
         // Генерация начальной скорости
         let starting_velocity = Quantity::new(
@@ -79,20 +79,20 @@ impl Comet {
     /// Генерация начального положения
     fn generate_starting_position(rng: &mut ThreadRng) -> Point<Quantity<Kilometers>> {
         Point {
-            x: Quantity::new(Kilometers::new(rng.gen_range(-1e8..=1e8))),
-            y: Quantity::new(Kilometers::new(rng.gen_range(-1e8..=1e8))),
+            x: Quantity::new(Kilometers::new(rng.random_range(-1e8..=1e8))),
+            y: Quantity::new(Kilometers::new(rng.random_range(-1e8..=1e8))),
         }
     }
 
     /// Генерация начальной скорости
     fn generate_starting_velocity(possible_velocities: (f32, f32), rng: &mut ThreadRng) -> f32 {
-        rng.gen_range(possible_velocities.0..=possible_velocities.1)
+        rng.random_range(possible_velocities.0..=possible_velocities.1)
     }
 
     /// Генерация единичного вектора начальной скорости
     fn generate_starting_velocity_vector(rng: &mut ThreadRng) -> Vector {
-        let velocity_x = rng.gen_range(-1.0_f32..=1.);
-        let velocity_y = rng.gen_range(-1.0_f32..=1.);
+        let velocity_x = rng.random_range(-1.0_f32..=1.);
+        let velocity_y = rng.random_range(-1.0_f32..=1.);
         let velocity_vector_length = (velocity_x * velocity_x + velocity_y * velocity_y).sqrt();
 
         Vector::new(
@@ -103,42 +103,49 @@ impl Comet {
 
     /// Генерация массы
     fn generate_mass(possible_masses: (f32, f32), rng: &mut ThreadRng) -> f64 {
-        rng.gen_range(possible_masses.0..=possible_masses.1) as f64
+        rng.random_range(possible_masses.0..=possible_masses.1) as f64
     }
 
     /// Генерация радиуса
     fn generate_radius(possible_radii: (f32, f32), rng: &mut ThreadRng) -> f32 {
-        rng.gen_range(possible_radii.0..=possible_radii.1)
+        rng.random_range(possible_radii.0..=possible_radii.1)
     }
 }
 
 impl Object for Comet {
+    #[inline(always)]
     fn name(&self) -> &str {
         self.name.as_str()
     }
 
+    #[inline(always)]
     fn mass(&self) -> Quantity<Kilograms> {
         self.mass
     }
 
+    #[inline(always)]
     fn radius(&self) -> Quantity<Kilometers> {
         self.radius
     }
 
+    #[inline(always)]
     fn position(&self) -> Point<Quantity<Kilometers>> {
         self.movement.position()
     }
 
+    #[inline(always)]
     fn image(&self) -> &image::Handle {
         &self.image
     }
 }
 
 impl ObjectMotion for Comet {
+    #[inline(always)]
     fn movement(&self) -> &ObjectMovement {
         &self.movement
     }
 
+    #[inline(always)]
     fn movement_mut(&mut self) -> &mut ObjectMovement {
         &mut self.movement
     }
@@ -164,21 +171,25 @@ pub struct CometPossibleValues {
 
 impl CometPossibleValues {
     /// Получения изображения по индексу
+    #[inline(always)]
     pub fn get_image_by_index(&self, index: u8) -> &image::Handle {
         &self.images[index as usize]
     }
 
     /// Получение цвета по индексу
+    #[inline(always)]
     pub fn get_color_by_index(&self, index: u8) -> Color {
         self.colors[index as usize]
     }
 }
 
 impl CometPossibleValues {
+    #[inline(always)]
     pub fn images(&self) -> &[image::Handle] {
         self.images.as_slice()
     }
 
+    #[inline(always)]
     pub fn colors(&self) -> &[Color] {
         self.colors.as_slice()
     }

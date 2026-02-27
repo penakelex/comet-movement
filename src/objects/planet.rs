@@ -76,46 +76,56 @@ impl Planet {
 }
 
 impl Planet {
+    #[inline(always)]
     pub fn initial_orbit(&self) -> f32 {
         self.consts.initial_orbit().value()
     }
-    
+
+    #[inline(always)]
     pub fn satellites(&self) -> &[Rc<RefCell<Satellite>>] {
         self.satellites.as_slice()
     }
-    
+
+    #[inline(always)]
     pub fn satellites_mut(&mut self) -> &mut [Rc<RefCell<Satellite>>] {
         self.satellites.as_mut_slice()
     }
 }
 
 impl Object for Planet {
+    #[inline(always)]
     fn name(&self) -> &str {
         self.name.as_str()
     }
 
+    #[inline(always)]
     fn mass(&self) -> Quantity<Kilograms> {
         self.consts.mass()
     }
 
+    #[inline(always)]
     fn radius(&self) -> Quantity<Kilometers> {
         self.consts.radius()
     }
 
+    #[inline(always)]
     fn position(&self) -> Point<Quantity<Kilometers>> {
         self.movement.position()
     }
 
+    #[inline(always)]
     fn image(&self) -> &image::Handle {
         &self.image
     }
 }
 
 impl ObjectMotion for Planet {
+    #[inline(always)]
     fn movement(&self) -> &ObjectMovement {
         &self.movement
     }
 
+    #[inline(always)]
     fn movement_mut(&mut self) -> &mut ObjectMovement {
         &mut self.movement
     }

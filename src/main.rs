@@ -12,18 +12,19 @@ mod views;
 mod util;
 
 pub fn main() -> iced::Result {
-    application(SolarSystem::title, SolarSystem::update, SolarSystem::view)
+    application(SolarSystem::new, SolarSystem::update, SolarSystem::view)
+        .title(SolarSystem::title)
         .subscription(SolarSystem::subscription)
         .theme(SolarSystem::theme)
         .antialiasing(true)
         .run()
 }
 
-#[derive(Default)]
 struct SolarSystem {
     state: State,
 }
 
+// TODO: Разбить на несколько перечислений (возможно, сделать ещё и несколько обработчиков)
 #[derive(Debug, Clone)]
 enum Message {
     PositionChange(Point),
@@ -45,6 +46,12 @@ enum Message {
 }
 
 impl SolarSystem {
+    fn new() -> Self {
+        Self {
+            state: State::new()
+        }
+    }
+    
     fn update(&mut self, message: Message) {
         match message {
             Message::PositionChange(position) => self.state.change_position(position),
@@ -83,7 +90,7 @@ impl SolarSystem {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let solar_system = canvas(&self.state)
             .width(Fill)
             .height(Fill);

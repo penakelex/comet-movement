@@ -33,14 +33,17 @@ pub trait NewQuantity: QuantityUnit {
 pub struct Quantity<T: QuantityUnit + NewQuantity + Copy + Clone>(T);
 
 impl<T: QuantityUnit + NewQuantity + Copy + Clone> Quantity<T> {
+    #[inline(always)]
     pub const fn new(quantity_unit: T) -> Self {
         Self(quantity_unit)
     }
 
+    #[inline(always)]
     pub fn value(&self) -> T::Value {
         self.0.value()
     }
 
+    #[inline(always)]
     pub(crate) fn value_f64(&self) -> f64 {
         self.value().to_f64().unwrap()
     }
@@ -62,6 +65,7 @@ impl Quantity<Kilometers> {
 
 impl Quantity<MetersPerSecond> {
     /// Перевод из м/с в км/с
+    #[inline(always)]
     pub fn to_kilometers_per_second(self) -> Quantity<KilometersPerSecond> {
         Quantity::new(KilometersPerSecond::new((self.value() / 1e3) as f32))
     }

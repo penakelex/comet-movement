@@ -14,8 +14,9 @@ pub enum Speed {
 }
 
 impl Speed {
-    /// [base_time_between_ticks] - 
+    /// [base_time_between_ticks] -
     /// Базовый промежуток времени между двуями тиками ([`Time`](crate::util::time::Time))
+    #[inline(always)]
     pub fn new(base_time_between_ticks: u16) -> Self {
         Self::X1(base_time_between_ticks)
     }

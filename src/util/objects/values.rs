@@ -30,6 +30,7 @@ pub struct ObjectGravitationalForceValues {
 }
 
 impl ObjectGravitationalForceValues {
+    #[inline(always)]
     pub const fn new(position: Point<Quantity<Kilometers>>, mass: Quantity<Kilograms>) -> Self {
         Self {
             position,
@@ -62,6 +63,7 @@ pub struct ObjectFormValues {
 }
 
 impl ObjectFormValues {
+    #[inline(always)]
     pub const fn new(position: Point<Quantity<Kilometers>>, radius: Quantity<Kilometers>) -> Self {
         Self {
             position,

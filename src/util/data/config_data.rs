@@ -13,6 +13,7 @@ impl ConfigData {
 
 impl ConfigData {
     /// Получение данных из конфига по ключу
+    #[inline(always)]
     pub fn get<T: FromStr>(key: &str) -> T
     where
         <T as FromStr>::Err: Debug,

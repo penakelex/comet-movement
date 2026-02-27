@@ -6,7 +6,7 @@ use std::rc::{Rc, Weak};
 
 use gset::Getset;
 use iced::Color;
-use rand::{Rng, thread_rng};
+use rand::RngExt;
 use serde_json::from_reader;
 use tap::{Tap, TapOptional};
 
@@ -84,7 +84,7 @@ impl SpaceState {
 
     /// Генерация фоновых звёзд
     fn generate_stars(stars_count: u16) -> Vec<Star> {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         (0..stars_count).map(|_| Star::generate(&mut rng)).collect()
     }
 
@@ -229,13 +229,13 @@ impl SpaceState {
     fn generate_object_trajectory_color(
         trajectory_colors_values: &mut HashSet<(u8, u8, u8)>
     ) -> Color {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         loop {
             // Цвет объекта (R, G, B)
             let color_values = (
-                rng.gen_range(0..255_u8),
-                rng.gen_range(0..255_u8),
-                rng.gen_range(0..255_u8),
+                rng.random_range(0..255_u8),
+                rng.random_range(0..255_u8),
+                rng.random_range(0..255_u8),
             );
 
             if !trajectory_colors_values.contains(&color_values) {

@@ -26,14 +26,21 @@ impl Time {
 impl Time {
     /// Является ли год високосным
     fn is_year_leap(&self) -> bool {
-        self.year % 4 == 0 && self.year % 100 != 0 || self.year % 400 == 0
+        self.year.is_multiple_of(4) && self.year.is_multiple_of(100)
+            || self.year.is_multiple_of(400)
     }
 
     /// Дней в месяце
     fn days_in_month(&self) -> u8 {
         match self.month {
             1 => 31, // Январь
-            2 => if self.is_year_leap() { 29 } else { 28 }, // Февраль
+            2 => {
+                if self.is_year_leap() {
+                    29
+                } else {
+                    28
+                }
+            } // Февраль
             3 => 31, // Март
             4 => 30, // Апрель
             5 => 31, // Май
@@ -44,7 +51,7 @@ impl Time {
             10 => 31, // Октябрь
             11 => 30, // Ноябрь
             12 => 31, // Декабрь
-            _ => panic!("There is only 12 months")
+            _ => panic!("There is only 12 months"),
         }
     }
 
@@ -77,7 +84,7 @@ impl Time {
         let current_summary_days = self.day as u16 + current_summary_hours / 24;
 
         let days_in_month = self.days_in_month();
-        
+
         self.day = (current_summary_days % (days_in_month + 1) as u16) as u8;
 
         if current_summary_days as u8 <= days_in_month {
@@ -109,7 +116,7 @@ impl Display for Time {
     fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             fmt,
-            "{:02}.{:02}.{:04} {:02}:{:02}:{:02}", 
+            "{:02}.{:02}.{:04} {:02}:{:02}:{:02}",
             self.day, self.month, self.year, self.hour, self.minute, self.second,
         )
     }

@@ -40,15 +40,14 @@ impl ViewState {
 }
 
 impl ViewState {
+    #[inline(always)]
     pub fn is_satellites_opened(&self, planet_name: String) -> bool {
         self.satellites_views_opened[&planet_name]
     }
 
     pub fn toggle_satellites_view(&mut self, planet_name: String) {
         self.satellites_views_opened.entry(planet_name)
-            .and_modify(|opened| {
-                *opened = !*opened;
-            });
+            .and_modify(|opened| *opened = !*opened);
     }
 }
 

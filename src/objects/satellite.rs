@@ -66,32 +66,39 @@ impl Satellite {
 }
 
 impl Object for Satellite {
+    #[inline(always)]
     fn name(&self) -> &str {
         self.name.as_str()
     }
 
+    #[inline(always)]
     fn mass(&self) -> Quantity<Kilograms> {
         self.consts.mass()
     }
 
+    #[inline(always)]
     fn radius(&self) -> Quantity<Kilometers> {
         self.consts.radius()
     }
 
+    #[inline(always)]
     fn position(&self) -> Point<Quantity<Kilometers>> {
         self.movement.position()
     }
 
+    #[inline(always)]
     fn image(&self) -> &image::Handle {
         &self.image
     }
 }
 
 impl ObjectMotion for Satellite {
+    #[inline(always)]
     fn movement(&self) -> &ObjectMovement {
         &self.movement
     }
 
+    #[inline(always)]
     fn movement_mut(&mut self) -> &mut ObjectMovement {
         &mut self.movement
     }

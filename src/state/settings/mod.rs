@@ -23,6 +23,7 @@ pub struct Settings {
 }
 
 impl Settings {
+    #[inline]
     pub fn new(base_time_between_ticks: u16, default_scale: u32) -> Self {
         Self {
             speed: Speed::new(base_time_between_ticks),

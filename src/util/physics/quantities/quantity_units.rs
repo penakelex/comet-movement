@@ -5,12 +5,14 @@ use crate::util::physics::quantities::{NewQuantity, QuantityUnit};
 pub struct Newtons(f64);
 
 impl Newtons {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for Newtons {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -19,10 +21,12 @@ impl NewQuantity for Newtons {
 impl QuantityUnit for Newtons {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "N"
     }
@@ -33,12 +37,14 @@ impl QuantityUnit for Newtons {
 pub struct Kilometers(f32);
 
 impl Kilometers {
+    #[inline(always)]
     pub const fn new(value: f32) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for Kilometers {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -47,10 +53,12 @@ impl NewQuantity for Kilometers {
 impl QuantityUnit for Kilometers {
     type Value = f32;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "km"
     }
@@ -61,12 +69,14 @@ impl QuantityUnit for Kilometers {
 pub struct Meters(f64);
 
 impl Meters {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for Meters {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -75,10 +85,12 @@ impl NewQuantity for Meters {
 impl QuantityUnit for Meters {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "m"
     }
@@ -89,12 +101,14 @@ impl QuantityUnit for Meters {
 pub struct KilometersPerSecond(f32);
 
 impl KilometersPerSecond {
+    #[inline(always)]
     pub const fn new(value: f32) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for KilometersPerSecond {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -103,10 +117,12 @@ impl NewQuantity for KilometersPerSecond {
 impl QuantityUnit for KilometersPerSecond {
     type Value = f32;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "km/s"
     }
@@ -117,12 +133,14 @@ impl QuantityUnit for KilometersPerSecond {
 pub struct MetersPerSecond(f64);
 
 impl MetersPerSecond {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for MetersPerSecond {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -131,10 +149,12 @@ impl NewQuantity for MetersPerSecond {
 impl QuantityUnit for MetersPerSecond {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "m/s"
     }
@@ -145,12 +165,14 @@ impl QuantityUnit for MetersPerSecond {
 pub struct Kilograms(f64);
 
 impl Kilograms {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for Kilograms {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -159,10 +181,12 @@ impl NewQuantity for Kilograms {
 impl QuantityUnit for Kilograms {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "kg"
     }
@@ -173,12 +197,14 @@ impl QuantityUnit for Kilograms {
 pub struct NewtonMeterSquaredPerKilogramSquared(f64);
 
 impl NewtonMeterSquaredPerKilogramSquared {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for NewtonMeterSquaredPerKilogramSquared {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -187,10 +213,12 @@ impl NewQuantity for NewtonMeterSquaredPerKilogramSquared {
 impl QuantityUnit for NewtonMeterSquaredPerKilogramSquared {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "N*m^2/kg^2"
     }
@@ -201,12 +229,14 @@ impl QuantityUnit for NewtonMeterSquaredPerKilogramSquared {
 pub struct KilogramMeterPerSecond(f64);
 
 impl KilogramMeterPerSecond {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for KilogramMeterPerSecond {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -215,10 +245,12 @@ impl NewQuantity for KilogramMeterPerSecond {
 impl QuantityUnit for KilogramMeterPerSecond {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "kg*m/s"
     }
@@ -229,12 +261,14 @@ impl QuantityUnit for KilogramMeterPerSecond {
 pub struct Seconds(f32);
 
 impl Seconds {
+    #[inline(always)]
     pub const fn new(value: f32) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for Seconds {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -243,10 +277,12 @@ impl NewQuantity for Seconds {
 impl QuantityUnit for Seconds {
     type Value = f32;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "s"
     }
@@ -257,12 +293,14 @@ impl QuantityUnit for Seconds {
 pub struct InterimQuantityUnit(f64);
 
 impl InterimQuantityUnit {
+    #[inline(always)]
     pub const fn new(value: f64) -> Self {
         Self(value)
     }
 }
 
 impl NewQuantity for InterimQuantityUnit {
+    #[inline(always)]
     fn new(value: Self::Value) -> Self {
         Self::new(value)
     }
@@ -271,10 +309,12 @@ impl NewQuantity for InterimQuantityUnit {
 impl QuantityUnit for InterimQuantityUnit {
     type Value = f64;
 
+    #[inline(always)]
     fn value(&self) -> Self::Value {
         self.0
     }
 
+    #[inline(always)]
     fn marking(&self) -> &str {
         "unknown"
     }

@@ -9,6 +9,7 @@ pub struct RedrawState {
 }
 
 impl RedrawState {
+    #[inline(always)]
     pub fn new(ticks_between_redraws: u32) -> Self {
         Self {
             ticks_until_redraw: 0,
